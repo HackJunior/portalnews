@@ -31,7 +31,7 @@ export default {
         params: { tags: "Portada Bottom" }
       });
       console.log('bottom', response.data);
-      this.items = response.data;
+      this.items = response.data.slice(-6);
 
     } catch (error) {
       console.error("Error al cargar las noticias:", error);

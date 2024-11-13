@@ -63,7 +63,7 @@ export default {
 
       const [mainItem, ...sideItems] = response.data;
       this.mainItem = mainItem;
-      this.sideItems = sideItems;
+      this.sideItems = sideItems.slice(-4);
     } catch (error) {
       console.error("Error al cargar las noticias:", error);
     }
