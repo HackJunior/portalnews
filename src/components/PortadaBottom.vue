@@ -13,6 +13,10 @@
         </a>
       </div>
     </div>
+    <!-- Imagen de Truly Kurious ajustada para ocupar el ancho completo -->
+    <div class="full-width-container">
+      <img src="@/assets/truly_kurious.jpg" alt="Truly Kurious" class="truly-kurious-image" />
+    </div>
   </section>
 </template>
 
@@ -32,7 +36,6 @@ export default {
       });
       console.log('bottom', response.data);
       this.items = response.data.slice(-6);
-
     } catch (error) {
       console.error("Error al cargar las noticias:", error);
     }
@@ -59,7 +62,7 @@ export default {
 
 .image-container {
   width: 100%;
-  height: 200px; /* Ajusta la altura según tus necesidades */
+  height: 350px; /* Ajusta la altura según tus necesidades */
   overflow: hidden;
 }
 
@@ -85,7 +88,7 @@ export default {
   background-color: #3DAAA0; /* Color primario */
   padding: 5px 10px;
   border-radius: 3px;
-  font-size: 0.9em;
+  font-size: 1.1em; /* Tamaño de letra aumentado */
   font-weight: bold;
   margin-bottom: 5px;
   display: inline-block;
@@ -99,7 +102,7 @@ export default {
 }
 
 .title {
-  font-size: 1.2em;
+  font-size: 1.5em; /* Tamaño de letra aumentado */
   font-weight: bold;
   text-align: justify;
   color: white; /* Color blanco */
@@ -110,11 +113,20 @@ export default {
   color: yellow; /* Cambia a amarillo al hover */
 }
 
-.category-link {
+.category-link, .title-link {
   text-decoration: none;
 }
 
-.title-link {
-  text-decoration: none;
+.full-width-container {
+  grid-column: span 3;
+  width: 100%; /* Ocupa el ancho completo del contenedor */
+  text-align: center;
+  margin-top: 20px;
+}
+
+.truly-kurious-image {
+  max-width: 100%; /* Extiende la imagen al ancho completo del contenedor */
+  min-height: 100px;
+  height: auto;
 }
 </style>
