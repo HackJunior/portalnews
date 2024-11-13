@@ -1,7 +1,9 @@
 <template>
   <section class="portada-bottom-container">
     <div class="portada-item" v-for="(item, index) in items" :key="index">
-      <img :src="item.image" alt="Imagen de la noticia" class="item-image" />
+      <div class="image-container">
+        <img :src="item.image" alt="Imagen de la noticia" class="item-image" />
+      </div>
       <div class="item-overlay">
         <a href="about:blank" class="category-link">
           <div class="category">{{ item.category }}</div>
@@ -28,7 +30,8 @@ export default {
       const response = await axios.get(`${apiUrl}/newsTag`, {
         params: { tags: "Portada Bottom" }
       });
-      this.item = response.data;
+      console.log('bottom', response.data);
+      this.items = response.data;
 
     } catch (error) {
       console.error("Error al cargar las noticias:", error);
@@ -54,9 +57,15 @@ export default {
   overflow: hidden;
 }
 
+.image-container {
+  width: 100%;
+  height: 200px; /* Ajusta la altura según tus necesidades */
+  overflow: hidden;
+}
+
 .item-image {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -109,4 +118,3 @@ export default {
   text-decoration: none;
 }
 </style>
-    

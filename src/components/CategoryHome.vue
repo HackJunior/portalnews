@@ -59,7 +59,7 @@ export default {
       const response = await axios.get(`${apiUrl}/news`, {
         params: { category:  this.message}
       });
-      console.log(response.data);
+      console.log('Home',response.data);
 
       const [mainItem, ...sideItems] = response.data;
       this.mainItem = mainItem;

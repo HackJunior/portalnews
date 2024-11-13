@@ -35,7 +35,7 @@ export default {
     };
   },
   setup() {
-    const categoria_1 = "Deportes";
+    const categoria_1 = "Nacionales";
     return {
       categoria_1,
     };
