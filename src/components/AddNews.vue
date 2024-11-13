@@ -82,7 +82,7 @@ export default {
       content: "",
     });
 
-    const categories = ref(["Política", "Economía", "Deportes"]);
+    const categories = ref(["Política", "Economía", "Deportes","Actualidad","Nacionales","Internacionales","Entretenimiento","Viral"]);
     const tagsOptions = ref([
       { name: "Portada" },
       { name: "Portada Bottom"},
