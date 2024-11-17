@@ -35,22 +35,22 @@ export default {
   data() {
 
     return {
-      mainImage: null,
-      category: null,
-      headline: null,
+      mainImage: require('@/assets/publicidad.jpg'),
+      category: "Nacional",
+      headline: "Esta es la noticia que puede ser un poquito larga",
       adImage: require('@/assets/publicidad.jpg'), 
       videoUrl: "https://www.youtube.com/embed/kNt-81PAE94" // URL de ejemplo para el video
     };
   },
   async mounted() {
     try {
-      const response = await axios.get(`${apiUrl}/newsTag`, {
+      /*const response = await axios.get(`${apiUrl}/newsTag`, {
         params: { tags: "Portada" }
       });
       console.log(response.data);
       this.mainImage = response.data[0].image;
       this.category = response.data[0].category;
-      this.headline = response.data[0].title;
+      this.headline = response.data[0].title;*/
     } catch (error) {
       console.error("Error al cargar las noticias:", error);
     }

@@ -14,6 +14,10 @@
         :class="['carousel-item', currentSection === 'users-config' ? 'active' : '']"
         @click="currentSection = 'users-config'"
       >Usuarios</span>
+      <span
+        :class="['carousel-item', currentSection === 'publicidad' ? 'active' : '']"
+        @click="currentSection = 'publicidad-encuestas'"
+      >Publicidad y Encuesta</span>
     </header>
 
     <!-- Contenido según la sección seleccionada -->
@@ -21,15 +25,17 @@
       <AddNews v-if="currentSection === 'add-news'" />
       <ViewNews v-else-if="currentSection === 'view-news'" />
       <UsersConfig v-else-if="currentSection === 'users-config'" />
+      <Publicidad_Encuestas v-else-if="currentSection === 'publicidad-encuestas'" />
     </main>
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
-import AddNews from "@/components/AddNews.vue";
-import ViewNews from "@/components/ViewNews.vue";
-import UsersConfig from "@/components/UsersConfig.vue";
+import AddNews from "@/components/AdminPanel/AddNews.vue";
+import ViewNews from "@/components/AdminPanel/ViewNews.vue";
+import UsersConfig from "@/components/AdminPanel/UsersConfig.vue";
+import Publicidad_Encuestas from "@/components/AdminPanel/Publicidad_Encuestas.vue";
 
 export default {
   name: "AdminPanel",
@@ -37,6 +43,7 @@ export default {
     AddNews,
     ViewNews,
     UsersConfig,
+    Publicidad_Encuestas
   },
   setup() {
     const currentSection = ref("add-news");
