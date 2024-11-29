@@ -2,7 +2,7 @@
 FROM node:18 AS build
 
 # Establece el directorio de trabajo en el contenedor
-WORKDIR /app
+WORKDIR /app    
 
 # Copia los archivos del proyecto y compila
 COPY package*.json ./

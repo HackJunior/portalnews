@@ -30,6 +30,8 @@
 const apiUrl = "/api"; 
 
 import axios from "axios";
+import mainImage from '@/assets/publicidad.jpg';
+import adImage from '@/assets/publicidad/publicidad_1.jpg';
 export default {
   
   data() {
@@ -38,7 +40,7 @@ export default {
       mainImage: require('@/assets/publicidad.jpg'),
       category: "Nacional",
       headline: "Esta es la noticia que puede ser un poquito larga",
-      adImage: require('@/assets/publicidad.jpg'), 
+      adImage: require('@/assets/publicidad/publicidad_1.jpg'), 
       videoUrl: "https://www.youtube.com/embed/kNt-81PAE94" // URL de ejemplo para el video
     };
   },

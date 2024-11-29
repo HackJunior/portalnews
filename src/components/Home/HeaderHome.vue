@@ -1,73 +1,73 @@
+
 <template>
   <div class="header-space"></div>
   <header class="header-home">
-    <div class="logo">
-      <img src="@/assets/logoSTE.png" alt="Logo" />
-    </div>
-    <div class="social-icons">
-      <a href="https://www.youtube.com" target="_blank" rel="noopener">
-        <img src="@/assets/icons/youtube.svg" alt="YouTube" />
-      </a>
-      <a href="https://www.instagram.com" target="_blank" rel="noopener">
-        <img src="@/assets/icons/instagram.svg" alt="Instagram" />
-      </a>
-      <a href="https://www.twitter.com" target="_blank" rel="noopener">
-        <img src="@/assets/icons/twitter.svg" alt="Twitter" />
-      </a>
+    <div class="header-content">
+      <div class="logo">
+        <img src="@/assets/logoSTE.png" alt="Logo" />
+      </div>
+      <div class="social-icons">
+        <a href="https://www.instagram.com" target="_blank" rel="noopener">
+          <img src="@/assets/icons/instagram.svg" alt="Instagram" />
+        </a>
+        <a href="https://www.facebook.com" target="_blank" rel="noopener">
+          <img src="@/assets/icons/facebook.svg" alt="Facebook" />
+        </a>
+        <a href="https://www.twitter.com" target="_blank" rel="noopener">
+          <img src="@/assets/icons/twitter.svg" alt="Twitter" />
+        </a>
+        <a href="https://www.whatsapp.com" target="_blank" rel="noopener">
+          <img src="@/assets/icons/whatsapp.svg" alt="WhatsApp" />
+        </a>
+        <a href="https://www.youtube.com" target="_blank" rel="noopener">
+          <img src="@/assets/icons/youtube.svg" alt="YouTube" />
+        </a>
+      </div>
     </div>
   </header>
-  <div class="bottom-border"></div>
-
-  <!-- Menú -->
-  <nav class="menu-home">
-    <button class="menu-toggle" @click="toggleMenu">☰ Categorías</button>
-    <div class="menu-background">
-      <ul class="menu-list" :class="{ 'menu-collapsed': isMenuCollapsed && isMobile }">
-        <li v-for="(category, index) in categories" :key="index">
-          <a :href="category.href">{{ category.text }}</a>
+  <div class="red-border"></div>
+  <div class="menu-container">
+    <div class="menu">
+      <ul class="menu-list">
+        <li
+          v-for="(category, index) in categories"
+          :key="index"
+          @click="navigateToCategory(category.text)"
+        >
+          <a href="javascript:void(0)">{{ category.text }}</a>
         </li>
       </ul>
     </div>
-    <div class="bottom-border"></div>
-  </nav>
+    <div class="green-border"></div>
+  </div>
 </template>
+
 
 <script>
 export default {
   data() {
     return {
       categories: [
-        { text: 'Nacionales', href: '#nacionales' },
-        { text: 'Internacionales', href: '#internacionales' },
-        { text: 'Política', href: '#politica' },
-        { text: 'Entretenimiento', href: '#entretenimiento' },
-        { text: 'Deportes', href: '#deportes' },
-        { text: 'Economía', href: '#economia' },
-        { text: 'Actualidad', href: '#actualidad' },
-        { text: 'Entretenimiento', href: '#deportes' },
-        { text: 'Viral', href: '#economia' },
-        { text: 'Local', href: '#actualidad' },
+        { text: 'Nacionales' },
+        { text: 'Internacionales' },
+        { text: 'Política' },
+        { text: 'Entretenimiento' },
+        { text: 'Deportes' },
+        { text: 'Economía' },
+        { text: 'Actualidad' },
+        { text: 'Viral' },
+        { text: 'Local' },
       ],
-      isMenuCollapsed: false,
-      isMobile: false,
     };
   },
   methods: {
-    toggleMenu() {
-      this.isMenuCollapsed = !this.isMenuCollapsed;
+    navigateToCategory(category) {
+      const route = `/${category.toLowerCase()}`;
+      this.$router.push(route);
     },
-    checkMobile() {
-      this.isMobile = window.innerWidth <= 768;
-    },
-  },
-  mounted() {
-    this.checkMobile();
-    window.addEventListener('resize', this.checkMobile);
-  },
-  beforeUnmount() {
-    window.removeEventListener('resize', this.checkMobile);
   },
 };
+
 </script>
 
 <style>
@@ -78,135 +78,107 @@ export default {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   overflow-x: hidden;
 }
 
 .header-space {
-  height: 60px; /* Espacio del encabezado agrandado */
-  background-color: #E0E0E0;
-  border-bottom: 2px solid #CCCCCC;
+  height: 10px;
+  background-color: #e0e0e0;
 }
 
 .header-home {
+  background-color: white;
+  padding: 20px 0;
   display: flex;
-  justify-content: space-between; /* Logo a la izquierda, redes a la derecha */
+  flex-direction: column;
   align-items: center;
-  padding: 0 20px; /* Espaciado interno */
-  height: 100px; /* Altura del encabezado */
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 20px;
 }
 
 .logo img {
-  height: 70px; /* Ajusta el tamaño del logo */
+  height: 70px;
 }
 
 .social-icons {
   display: flex;
-  gap: 15px; /* Espaciado entre íconos */
+  gap: 10px;
+  align-items: center;
 }
 
 .social-icons img {
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   transition: transform 0.3s;
 }
 
 .social-icons img:hover {
-  transform: scale(1.2); /* Efecto hover para agrandar íconos */
+  transform: scale(1.2);
 }
 
-.bottom-border {
+.red-border {
   height: 5px;
-  background-color: #F2665E;
+  background-color: #f2665e;
 }
 
-/* Menú */
-.menu-home {
-  text-align: center;
+.menu-container {
+  background-color: #3daaa0;
 }
 
-.menu-background {
-  background-color: #3DAAA0; /* Fondo verde del menú */
-  width: 100%; /* El fondo ocupa todo el ancho */
+.menu {
+  padding: 10px 0;
 }
 
 .menu-list {
   list-style: none;
-  display: flex; /* Horizontal */
-  align-items: center; /* Centra verticalmente */
-  justify-content: space-evenly; /* Distribuye las letras uniformemente */
-  width: 66.6%; /* Contenido entre 2/6 y 5/6 */
-  margin: 0 auto; /* Centra el contenido horizontalmente */
-  height: 70px; /* Altura del menú */
+  display: flex;
+  justify-content: space-evenly;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 0;
 }
 
-.menu-list li {
-  margin: 0; /* Elimina cualquier espacio entre elementos */
-}
-
-.menu-list a {
+.menu-list li a {
   text-decoration: none;
   color: white;
-  font-size: 1.8em; /* Letras más grandes */
+  font-size: 1.2em;
   font-weight: bold;
-  transition: background-color 0.3s;
-  padding: 5px 10px; /* Espaciado interno */
+  transition: background-color 0.3s, color 0.3s;
+  padding: 5px 10px;
 }
 
-.menu-list a:hover {
+.menu-list li a:hover {
   background-color: white;
-  color: #3DAAA0;
+  color: #3daaa0;
   border-radius: 5px;
 }
 
-/* Botón para menú desplegable */
-.menu-toggle {
-  display: none;
-  background-color: #3DAAA0;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 1.2em;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-  border-bottom: 2px solid #CCCCCC;
+.green-border {
+  height: 3px;
+  background-color: #b2d8d8;
 }
 
-.menu-collapsed {
-  display: none;
-}
-
-/* Menú desplegable en móviles */
+/* Responsive Design */
 @media (max-width: 768px) {
-  .menu-toggle {
-    display: block;
-  }
-
-  .menu-background {
-    width: 100%; /* Fondo completo en móviles */
+  .header-content {
+    flex-direction: column;
+    gap: 10px;
   }
 
   .menu-list {
-    display: block; /* Cambia a lista vertical */
-    width: 100%; /* Ancho completo del contenido en móviles */
-    padding: 0;
-  }
-
-  .menu-list.menu-collapsed {
-    display: none;
-  }
-
-  .menu-list li {
-    padding: 10px 20px;
-    border-bottom: 1px solid #CCCCCC;
-  }
-
-  .menu-list a {
-    font-size: 1.2em; /* Ajuste de tamaño en móviles */
+    flex-direction: column;
+    gap: 5px;
   }
 }
 </style>

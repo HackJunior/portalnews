@@ -1,16 +1,21 @@
 <template>
-  <HeaderHome/>
+  <HeaderHome />
   <section class="portada-container">
+    <!-- Portada principal -->
     <div class="portada-main">
-      <img :src="mainImage" alt="Imagen principal" class="main-image" />
-      <div class="portada-title">
-        <div class="category">{{ category }}</div>
-        <div class="headline" @click="openNewTab">{{ headline }}</div>
-      </div>
+      <NewsWithTitle 
+        :imageUrl="mainImage" 
+        :category="category" 
+        :title="headline" 
+        :link="'https://example.com'" 
+        height="525px"
+      />
     </div>
+
+    <!-- Publicidad y video -->
     <div class="portada-side">
-      <div class="ad-section">
-        <img :src="adImage" alt="Publicidad" class="ad-image" />
+      <div class="truly-section">
+        <img :src="TrulyImage" class="truly-image" alt="Publicidad" />
       </div>
       <div class="video-section">
         <iframe 
@@ -20,155 +25,101 @@
           title="YouTube video player" 
           frameborder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-          allowfullscreen>
-        </iframe>
+          allowfullscreen
+        ></iframe>
       </div>
     </div>
   </section>
-  
+
+  <!-- Noticias destacadas -->
+  <section class="news-grid">
+    <NewsWithTitle
+      v-for="(news, index) in gridNews"
+      :key="index"
+      :imageUrl="news.image"
+      :category="news.category"
+      :title="news.title"
+      :link="news.link"
+      height="225px"
+    />
+  </section>
 </template>
 
 <script>
-import HeaderHome from '@/components/Home/HeaderHome.vue';
+import HeaderHome from "@/components/Home/HeaderHome.vue";
+import NewsWithTitle from "@/components/Home/NewsWithTitle.vue"; // Importamos el componente
+import mainImage from "@/assets/portada.jpg"; 
+import TrulyImage from "@/assets/publicidad/publicidad_1.jpg";
+
 export default {
-  components:{HeaderHome},
+  components: { HeaderHome, NewsWithTitle },
   data() {
     return {
-      categories: [ 
-        { text: 'Nacionales', href: '#nacionales' },
-        { text: 'Internacionales', href: '#internacionales' },
-        { text: 'Política', href: '#politica' },
-        { text: 'Entretenimiento', href: '#entretenimiento' },
-        { text: 'Deportes', href: '#deportes' },
-        { text: 'Economía', href: '#economia' },
-        { text: 'Actualidad', href: '#actualidad' },
-        { text: 'Tecnología', href: '#tecnologia' }
-      ],
-      mainImage: require('@/assets/portada.jpg'),
+      mainImage,
       category: "Nacional",
-      headline: "Esta es la noticia que puede ser un poquito larga",
-      adImage: require('@/assets/publicidad.jpg'), 
-      videoUrl: "https://www.youtube.com/embed/kNt-81PAE94" // URL de ejemplo para el video
+      headline: "Esta es la noticia que puede ser un poquito larga y esto",
+      TrulyImage,
+      videoUrl: "https://www.youtube.com/embed/kNt-81PAE94", // URL del video
+      gridNews: [
+        { image: mainImage, category: "Internacionales", title: "Noticia 1", link: "https://example.com/1" },
+        { image: mainImage, category: "Salud", title: "Noticia 2", link: "https://example.com/2" },
+        { image: mainImage, category: "Nacionales", title: "Noticia 3", link: "https://example.com/3" },
+        { image: mainImage, category: "Política", title: "Noticia 4", link: "https://example.com/4" },
+        { image: mainImage, category: "Deportes", title: "Noticia 5", link: "https://example.com/5" },
+        { image: mainImage, category: "Economía", title: "Noticia 6", link: "https://example.com/6" },
+      ],
     };
-  }
+  },
 };
 </script>
 
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Estilos globales */
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow-x: hidden; /* Evita scroll horizontal */
-}
-
-/* Estilos específicos del componente */
-.header-space {
-  height: 50px;
-  background-color: #E0E0E0;
-  border-bottom: 2px solid #CCCCCC;
-  width: 100%; /* Asegura que ocupe el ancho completo */
-}
-
-.header-home {
-  display: flex;
-  justify-content: center; /* Centra el contenido horizontalmente */
-  align-items: center; /* Centra verticalmente */
-  width: 100%; /* Asegura ancho completo */
-}
-
-.bottom-border {
-  width: 100%; /* Asegura que ocupe el ancho completo */
-  height: 5px;
-  background-color: #F2665E;
-}
-
-.logo img {
-  height: 50px;
-}
-
+<style scoped>
 .portada-container {
   display: flex;
-  justify-content: center;
   gap: 20px;
-  margin: 20px auto;
-  margin-top: 50px;
-  max-width: 1500px;
+  max-width: 1200px; /* Coincide con CategoryPage */
+  margin: 0 auto;
+  padding: 20px 0;
 }
 
 .portada-main {
-  flex: 3;
-  position: relative;
-}
-
-.main-image {
-  width: 100%;
-  height: 600px;
-  object-fit: cover;
-  border-radius: 5px;
-}
-
-.portada-title {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  right: 20px; /* Asegura que el contenedor no se salga del borde derecho */
-  color: white;
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente opcional para resaltar el texto */
-  max-width: calc(100% - 40px); /* Ajusta el ancho máximo basado en los márgenes */
-  text-align: justify;
-  word-wrap: break-word; /* Permite que las palabras se ajusten al ancho */
-  overflow-wrap: break-word; /* Adicional para asegurar el ajuste */
-}
-
-
-.category {
-  background-color: #3DAAA0; /* Color primario */
-  color: white;
-  padding: 5px 10px;
-  border-radius: 3px;
-  font-size: 1em;
-  font-weight: bold;
-  margin-bottom: 10px; /* Separa la categoría del texto */
-  display: inline-block;
-}
-
-.headline {
-  font-size: 2em;
-  font-weight: bold;
-  color: white; /* Color blanco por defecto */
-  cursor: pointer;
-  transition: color 0.3s;
-}
-
-.headline:hover {
-  color: #FFD700; /* Amarillo al hacer hover */
+  flex: 3; /* Proporción similar a CategoryPage */
 }
 
 .portada-side {
-  flex: 1.5;
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.ad-section, .video-section {
-  background-color: #f0f0f0;
-  border-radius: 5px;
+.truly-section,
+.video-section {
+  background-color: #f8f8f8;
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.ad-image, .video-section iframe {
+.truly-image {
   width: 100%;
-  height: 280px;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-section iframe {
+  width: 100%;
+  height: 200px; /* Más compacto */
   border-radius: 5px;
+}
+
+/* Diseño de noticias destacadas */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+  grid-template-rows: repeat(2, 225px); /* 2 filas con 225px de altura */
+  gap: 20px;
+  max-width: 1200px;
+  margin: 20px auto;
 }
 </style>
