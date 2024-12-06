@@ -21,11 +21,11 @@
         </div>
         <div class="form-group">
           <label for="email">Correo</label>
-          <input type="email" id="email" v-model="userForm.email" class="styled-input" />
+          <input type="email" id="b" v-model="userForm.correo" class="styled-input" />
         </div>
         <div class="form-group">
           <label for="role">Rol</label>
-          <select id="role" v-model="userForm.role" class="styled-input">
+          <select id="role" v-model="userForm.rol" class="styled-input">
             <option value="" disabled>Seleccione un rol</option>
             <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
           </select>
@@ -50,11 +50,11 @@
         </div>
         <div class="form-group">
           <label for="editEmail">Correo</label>
-          <input type="email" id="editEmail" v-model="editForm.email" class="styled-input" />
+          <input type="email" id="editEmail" v-model="editForm.correo" class="styled-input" />
         </div>
         <div class="form-group">
           <label for="editRole">Rol</label>
-          <select id="editRole" v-model="editForm.role" class="styled-input">
+          <select id="editRole" v-model="editForm.rol" class="styled-input">
             <option value="" disabled>Seleccione un rol</option>
             <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
           </select>
@@ -75,13 +75,13 @@
 
     <!-- Lista de usuarios en formato de píldoras -->
     <div class="user-list-wrapper">
-      <div v-for="user in users" :key="user.id" class="user-pill">
+      <div v-for="user in users" :key="user._id" class="user-pill">
         <p class="user-info"><strong>Usuario:</strong> {{ user.username }}</p>
-        <p class="user-info"><strong>Rol:</strong> {{ user.role }}</p>
-        <p class="user-info"><strong>Correo:</strong> {{ user.email }}</p>
+        <p class="user-info"><strong>Rol:</strong> {{ user.rol }}</p>
+        <p class="user-info"><strong>Correo:</strong> {{ user.correo }}</p>
         <div class="user-actions">
           <button @click="openEditModal(user)" class="edit-btn">Editar</button>
-          <button @click="confirmDelete(user.id)" class="delete-btn">Eliminar</button>
+          <button @click="confirmDelete(user._id)" class="delete-btn">Eliminar</button>
         </div>
       </div>
     </div>
@@ -89,18 +89,12 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      users: [
-        { id: 1, username: "Juan", role: "Desarrollador", email: "juan@example.com" },
-        { id: 2, username: "Maria", role: "Admin", email: "maria@example.com" },
-        { id: 3, username: "Pedro", role: "Desarrollador", email: "pedro@example.com" },
-        { id: 4, username: "Ana", role: "Admin", email: "ana@example.com" },
-        { id: 5, username: "Carlos", role: "Desarrollador", email: "carlos@example.com" },
-        { id: 6, username: "Lucia", role: "Admin", email: "lucia@example.com" }
-      ],
-      roles: ["Desarrollador", "Admin"],
+      users: [],
+      roles: ["admin", "user","editor"],
       showCreateModal: false,
       showEditModal: false,
       showDeleteModal: false,
@@ -110,14 +104,14 @@ export default {
         username: "",
         password: "",
         confirmPassword: "",
-        email: "",
-        role: ""
+        correo: "",
+        rol: ""
       },
       editForm: {
         username: "",
         password: "",
-        email: "",
-        role: ""
+        correo: "",
+        rol: ""
       }
     };
   },
@@ -130,14 +124,21 @@ export default {
       this.showCreateModal = false;
       this.passwordError = false;
     },
-    createUser() {
+    async createUser() {
+      const token = localStorage.getItem('authToken');
       if (this.userForm.password !== this.userForm.confirmPassword) {
         this.passwordError = true;
         return;
-      }
+      } 
       this.passwordError = false;
-      const newUser = { ...this.userForm, id: Date.now() };
-      this.users.push(newUser);
+      //const { confirmPassword, ...dataToSend } = this.userForm;
+      delete this.userForm.confirmPassword;
+      await axios.post(`${process.env.VUE_APP_BACKENDURL}/users`,this.userForm,{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+      });
+      await this.getUsers();
       this.closeCreateModal();
     },
     openEditModal(user) {
@@ -147,21 +148,35 @@ export default {
     closeEditModal() {
       this.showEditModal = false;
     },
-    saveEdit() {
-      const index = this.users.findIndex(user => user.id === this.editForm.id);
+    async saveEdit() {
+      const token = localStorage.getItem('authToken');
+      const index = this.users.findIndex(user => user._id === this.editForm.id);
+
       if (index !== -1) {
         this.users.splice(index, 1, { ...this.editForm });
       }
+      await axios.put(`${process.env.VUE_APP_BACKENDURL}/users/${this.editForm._id}`,this.editForm,{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
       this.closeEditModal();
     },
     confirmDelete(id) {
       this.deleteId = id;
       this.showDeleteModal = true;
     },
-    deleteUser() {
-      this.users = this.users.filter(user => user.id !== this.deleteId);
+    async deleteUser() {
+      const token = localStorage.getItem('authToken');
+      await axios.delete(`${process.env.VUE_APP_BACKENDURL}/users/${this.deleteId}`,{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+      this.users = this.users.filter(user => user._id !== this.deleteId);
       this.showDeleteModal = false;
       this.deleteId = null;
+      
     },
     cancelDelete() {
       this.showDeleteModal = false;
@@ -172,10 +187,29 @@ export default {
         username: "",
         password: "",
         confirmPassword: "",
-        email: "",
-        role: ""
+        correo: "",
+        rol: ""
       };
-    }
+    },
+    async getUsers() {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/users`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+    // Asigna los datos de la respuesta a `newsData`
+        this.users = response.data.users;
+        console.log(this.users);
+      } catch (error) {
+      console.error("Error al obtener las noticias:", error.response || error.message);
+  }
+    },
+  },
+    mounted(){
+    this.getUsers();
   }
 };
 </script>

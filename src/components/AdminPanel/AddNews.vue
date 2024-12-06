@@ -109,7 +109,6 @@ export default {
     const tagsOptions = ref([
       { name: "Portada" },
       { name: "Portada Bottom"},
-      { name: "Mas Leidas" },
       { name: "Importante" }
     ]);
 
@@ -141,27 +140,23 @@ export default {
     };
 
     const submitForm = async () => {
+      const token = localStorage.getItem('authToken');
       if (!validateForm()) {
         return;
       }
 
       try {
-        console.log("Iniciando la subida de imagen...");
-
-        // Subimos la imagen primero
         const formData = new FormData();
         formData.append("image", newsForm.value.image);
 
-        const apiUrl = "/api"; 
-        const imageResponse = await axios.post(`${apiUrl}/subirimagen`, formData, {
+        const imageResponse = await axios.post(`${process.env.VUE_APP_BACKENDURL}/subirimagen`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`
           },
         });
 
         console.log("Respuesta de la imagen:", imageResponse);
-
-        // Obtenemos la URL de la imagen desde la respuesta
         const imageUrl = imageResponse.data.filename;
 
         console.log("URL de la imagen obtenida:", imageUrl);
@@ -176,7 +171,11 @@ export default {
 
         console.log("Enviando datos de la noticia:", newsData);
 
-        const newsResponse = await axios.post(`${apiUrl}/addnews`, newsData);
+        const newsResponse = await axios.post(`${process.env.VUE_APP_BACKENDURL}/news`, newsData,{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         console.log("Respuesta de la noticia:", newsResponse);
 
         // Mostrar mensaje de confirmación y limpiar el formulario

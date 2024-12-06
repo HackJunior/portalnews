@@ -1,11 +1,13 @@
 <template>
   <div class="news-with-title" :style="{ height: computedHeight, width: computedWidth }">
-    <img :src="imageUrl" alt="Imagen de noticia" class="news-image" />
+    <img :src="imageUrl" alt="Imagen de noticia" class="news-image" @click="onTitleClick(id)"/>
     <div class="title-overlay">
-      <span class="news-category">
+      <span class="news-category" :style="{ fontSize: computedFontSize }">
         {{ category }}
       </span>
-      <div class="news-title" @click="onTitleClick">{{ title }}</div>
+      <div class="news-title" :style="{ fontSize: computedFontSize }" @click="onTitleClick(id)">
+        {{ title }}
+      </div>
     </div>
   </div>
 </template>
@@ -27,21 +29,24 @@ export default {
     },
     link: {
       type: String,
-      required: false, // Opcional para manejar el clic en el título
+      required: false,
     },
     height: {
       type: String,
-      default: "400px", // Altura predeterminada
+      default: "400px",
     },
     width: {
       type: String,
-      default: "100%", // Ancho predeterminado
+      default: "100%",
     },
-  },
-  data() {
-    return {
-      isHovering: false,
-    };
+    fontSize: {
+      type: String,
+      default: "1.5rem", // Valor predeterminado para el tamaño de la fuente
+    },
+    id:{
+      type: String,
+      required: true,
+    }
   },
   computed: {
     computedHeight() {
@@ -50,12 +55,14 @@ export default {
     computedWidth() {
       return this.width;
     },
+    computedFontSize() {
+      return this.fontSize;
+    },
   },
   methods: {
-    onTitleClick() {
-      if (this.link) {
-        window.open(this.link, "_blank");
-      }
+    onTitleClick(id) {
+      const route = `/news/${id}`;
+      this.$router.push(route);
     },
   },
 };
@@ -94,27 +101,27 @@ export default {
 .news-category {
   background: linear-gradient(90deg, #3daaa0, #f2665e); /* Degradado verde y rojo */
   color: white;
-  font-size: 1.5rem; /* Tamaño más grande */
+  font-size: 1.5rem;
   font-weight: bold;
-  padding: 10px 20px; /* Más espaciado interno */
-  border-radius: 30px; /* Bordes redondeados más pronunciados */
+  padding: 10px 20px; /* Espaciado interno */
+  border-radius: 30px; /* Bordes redondeados */
   display: inline-block;
-  white-space: nowrap;
   text-align: center;
-  position: relative;
-  width: 150px;
+  white-space: nowrap; /* Evita saltos de línea */
+  width: fit-content; /* El badge se ajustará al contenido */
+  max-width: none; /* Elimina restricciones de ancho máximo */
 }
 
+
 .news-title {
-  font-size: 2.8rem; /* Título más grande */
-  font-weight: 900; /* Mucho más grueso */
+  font-weight: 900;
   line-height: 1.2;
   cursor: pointer;
-  text-align: justify; /* Justificación del texto */
+  text-align: justify;
   transition: color 0.3s ease;
 }
 
 .news-title:hover {
-  color: #ffd700; /* Amarillo al hacer hover */
+  color: #ffd700;
 }
 </style>

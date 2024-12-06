@@ -1,6 +1,6 @@
 <template>
   <div class="info-list">
-    <!-- Publicidades -->
+    <!-- Publicidades
     <div v-for="(ad, index) in advertisements" :key="index" class="info-pill">
       <div class="image-placeholder" v-if="!ad.image">
         <p>Espacio para Imagen</p>
@@ -10,7 +10,7 @@
       <button @click="openEditModal('ad', index)" class="edit-btn">Editar</button>
     </div>
 
-    <!-- Video de YouTube -->
+    
     <div class="info-pill video-pill">
       <div class="image-placeholder" v-if="!youtubeVideo.url">
         <p>Espacio para Video</p>
@@ -18,14 +18,14 @@
       <iframe v-else :src="youtubeEmbedUrl" frameborder="0" allowfullscreen></iframe>
       <h3>{{ youtubeVideo.title }}</h3>
       <button @click="openEditModal('video')" class="edit-btn">Editar</button>
-    </div>
+    </div>-->
 
     <!-- Encuesta -->
     <div class="info-pill survey-pill">
       <h3>{{ survey.title }}</h3>
       <div class="survey-results">
-        <p>SI: {{ survey.yesPercentage }}%</p>
-        <p>NO: {{ survey.noPercentage }}%</p>
+        <p>SI: {{ survey.percentages.yes }}</p>
+        <p>NO: {{ survey.percentages.no }}  </p>
       </div>
       <button @click="openEditModal('survey')" class="edit-btn">Editar</button>
     </div>
@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -73,11 +74,7 @@ export default {
         title: "Video de YouTube",
         url: ""
       },
-      survey: {
-        title: "Pregunta de Encuesta",
-        yesPercentage: 60,
-        noPercentage: 40
-      },
+      survey: {},
       showEditModal: false,
       editType: null,
       editIndex: null
@@ -113,9 +110,7 @@ export default {
     },
     saveChanges() {
       if (this.editType === "survey") {
-        // Reset values for survey
-        this.survey.yesPercentage = 0;
-        this.survey.noPercentage = 0;
+        this.addSurvey({"title":this.survey.title});
       }
       this.closeEditModal();
     },
@@ -123,7 +118,42 @@ export default {
       const regExp = /(?:https?:\/\/)?(?:www\.)?youtube.com\/(?:watch\?v=|embed\/|v\/|.+\?v=)?([^&\n?#]+)/;
       const match = url.match(regExp);
       return match && match[1] ? match[1] : null;
-    }
+    },    
+    async getSuvey() {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/surveys/active`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+    // Asigna los datos de la respuesta a `newsData`
+        this.survey = response.data.survey;
+        console.log(this.survey);
+      } catch (error) {
+      console.error("Error al obtener las noticias:", error.response || error.message);
+  }
+    },
+    async addSurvey(surveyData) {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.post(`${process.env.VUE_APP_BACKENDURL}/surveys`, surveyData,{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        this.survey = response.data.survey;
+        console.log(this.survey);
+      } catch (error) {
+      console.error("Error al obtener las noticias:", error.response || error.message);
+      }
+    },
+    
+  },
+    mounted(){
+    this.getSuvey();
   }
 };
 </script>

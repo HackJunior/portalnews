@@ -47,11 +47,10 @@ export default {
   },
   methods: {
 async submitForm() {
-    console.log("Email:", this.email, "Password:", this.password);
 
     try {
         const response = await axios.post(
-            'http://localhost:3000/api/login', 
+            process.env.VUE_APP_BACKENDURL + '/login', 
             {
                 username: this.email,
                 password: this.password,
@@ -60,8 +59,6 @@ async submitForm() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-
-                // Si necesitas enviar cookies o información de autenticación
                 withCredentials: true,
             }
         );

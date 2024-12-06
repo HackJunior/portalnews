@@ -32,20 +32,20 @@
     <transition-group name="fade" tag="div" class="news-list-wrapper">
       <div
         v-for="news in filteredNews"
-        :key="news.id"
+        :key="news._id"
         class="news-card"
       >
         <img :src="news.image" alt="Portada" class="news-image" />
         <div class="news-content">
           <h3 class="news-title">{{ news.title }}</h3>
           <p class="news-category">Categoría: {{ news.category }}</p>
-          <p class="news-date">Fecha: {{ news.date }}</p>
+          <p class="news-date">Fecha: {{ formatDate(news.createdAt) }}</p>
           <div class="news-tags">
             <span v-for="tag in news.tags" :key="tag" class="tag-pill">{{ tag }}</span>
           </div>
           <div class="news-actions">
             <button @click="openEditModal(news)" class="edit-btn">Editar</button>
-            <button @click="confirmDelete(news.id)" class="delete-btn">Eliminar</button>
+            <button @click="confirmDelete(news._id)" class="delete-btn">Eliminar</button>
           </div>
         </div>
       </div>
@@ -111,8 +111,13 @@
 <script>
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
+import axios from "axios";
+import moment from 'moment';
+
+
 
 export default {
+  
   name: "NewsList",
   components: { Multiselect },
   data() {
@@ -128,14 +133,7 @@ export default {
     ];
     
     return {
-      newsData: Array(20).fill(null).map((_, i) => ({
-        id: i + 1,
-        title: `Noticia sobre ${categories[i % categories.length]}`,
-        category: categories[i % categories.length],
-        date: "2024-11-14",
-        tags: this.assignTags(i, tagsOptions),
-        image: require("@/assets/portada.jpg"),
-      })),
+      newsData: [],
       filter: {
         title: "",
         category: "",
@@ -155,45 +153,74 @@ export default {
     };
   },
   methods: {
-    assignTags(index, tagsOptions) {
-      const tagsVariations = [
-        [tagsOptions[0].name, tagsOptions[1].name],
-        [tagsOptions[1].name, tagsOptions[2].name],
-        [tagsOptions[3].name, tagsOptions[4].name],
-        [tagsOptions[4].name, tagsOptions[5].name],
-        [tagsOptions[5].name, tagsOptions[6].name],
-        [tagsOptions[6].name, tagsOptions[0].name],
-      ];
-      return tagsVariations[index % tagsVariations.length];
-    },
     confirmDelete(id) {
       this.deleteId = id;
       this.showDeleteModal = true;
     },
-    deleteNews() {
-      this.newsData = this.newsData.filter(news => news.id !== this.deleteId);
+    async deleteNews() {
+      const token = localStorage.getItem('authToken');
+      this.newsData = this.newsData.filter(news => news._id !== this.deleteId);
+      await axios.delete(`${process.env.VUE_APP_BACKENDURL}/news/${this.deleteId}`,{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
       this.showDeleteModal = false;
-      this.deleteId = null; // Limpiamos el ID de eliminación
+      this.deleteId = null; 
     },
     cancelDelete() {
       this.showDeleteModal = false;
-      this.deleteId = null; // Cancelamos la eliminación
+      this.deleteId = null; 
     },
     openEditModal(news) {
-      this.editForm = { ...news, tags: [] };
-      this.editIndex = this.newsData.findIndex(item => item.id === news.id);
+      this.editForm = { ...news};
+      this.editIndex = this.newsData.findIndex(item => item.id === news._id);
       this.showEditModal = true;
     },
     closeEditModal() {
       this.showEditModal = false;
       this.editForm = { title: "", category: "", tags: [] };
+      this.editIndex = null;
     },
-    saveEdit() {
+    async saveEdit() {
+      const token = localStorage.getItem('authToken');
       if (this.editIndex !== null) {
         this.newsData.splice(this.editIndex, 1, { ...this.editForm });
       }
+      await axios.put(`${process.env.VUE_APP_BACKENDURL}/news/${this.editForm._id}`,this.editForm,{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
       this.closeEditModal();
     },
+    async getNews() {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+    // Asigna los datos de la respuesta a `newsData`
+        this.newsData = response.data;
+
+    this.newsData = response.data.map(news => ({
+      ...news,
+      image: `${process.env.VUE_APP_IMAGEROUTE}/${news.image}`,
+    }));
+
+    // Muestra los datos en consola para depuración
+    console.log("Noticias obtenidas:", this.newsData);
+      } catch (error) {
+      console.error("Error al obtener las noticias:", error.response || error.message);
+  }
+    },
+     formatDate(isoDate) {
+      return moment(isoDate).format('MM/DD/YYYY');
+    },
+
   },
   computed: {
     filteredNews() {
@@ -207,6 +234,9 @@ export default {
       });
     }
   },
+  mounted(){
+    this.getNews();
+  }
 };
 </script>
 

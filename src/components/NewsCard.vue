@@ -1,7 +1,7 @@
 <template>
   <div class="news-card">
     <div class="image-container">
-      <img :src="portada" alt="news" @click="goToDetail"/>
+      <img :src="imageUrl" alt="news" @click="goToDetail"/>
     </div>
     <div
       class="category-badge"
@@ -56,14 +56,25 @@ export default {
 .news-card {
   position: relative;
   width: 100%;
+  height: 200px; /* Fija la altura del contenedor */
   border: 1px solid #ccc;
-  overflow: hidden;
-  border-radius: 8px;
+  overflow: hidden; /* Asegura que no haya desbordamiento */
+  border-radius: 8px; /* Bordes redondeados */
+  display: flex;
+  justify-content: center; /* Centra la imagen horizontalmente */
+  align-items: center; /* Centra la imagen verticalmente */
+  background-color: #f9f9f9; /* Fondo para manejar imágenes transparentes */
+}
+
+.image-container {
+  width: 100%;
+  height: 100%; /* Ocupa todo el contenedor */
 }
 
 .image-container img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover; /* Hace que la imagen llene completamente el contenedor */
   display: block;
 }
 

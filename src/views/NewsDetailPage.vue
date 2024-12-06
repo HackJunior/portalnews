@@ -25,7 +25,7 @@
         <div class="news-detail-content">
           <div class="image-wrapper">
             <img :src="imageUrl" alt="Noticia" class="news-image" />
-            <p class="news-date">{{ createdAt }}</p>
+            <p class="news-date">{{ formatDate(createdAt) }}</p>
           </div>
           <div class="news-body">
             <p class="content-paragraph">{{ content }}</p>
@@ -44,7 +44,7 @@
             :key="index"
           >
             <div class="most-read-content">
-              <img :src="portadaImage" alt="Noticia" class="most-read-image" />
+              <img :src="news.image" alt="Noticia" class="most-read-image" />
               <p class="most-read-title-text">{{ news.title }}</p>
             </div>
             <div
@@ -60,7 +60,8 @@
 
 <script>
 import HeaderHome from "@/components/Home/HeaderHome.vue";
-import portadaImage from "@/assets/portada.jpg";
+import axios from "axios";
+import moment from "moment";
 
 export default {
   components: { HeaderHome },
@@ -71,18 +72,49 @@ export default {
       createdAt: null,
       title: null,
       category: null,
-      imageUrl: portadaImage,
-      mostReadNews: Array.from({ length: 6 }, (_, i) => ({
-        title: `Noticia destacada número ${i + 1} con un título largo para probar alineaciones y espaciado correcto`,
-      })),
+      imageUrl: null,
+      mostReadNews: [],
     };
+  },
+  methods:{
+    async getNew(Newsid){
+      
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news`, {params:{id: Newsid}}, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+      });
+      this.title = response.data.title;
+      this.category = response.data.category;
+      this.imageUrl = process.env.VUE_APP_IMAGEROUTE + response.data.image;
+      console.log(this.imageUrl);
+      this.createdAt = response.data.createdAt;
+      this.content= response.data.content;
+      this.newsId = Newsid;
+    },
+    async getMostReadNews(){
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news/top`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+      });
+      this.mostReadNews = response.data.map(news => ({
+        ...news,
+        image: `${process.env.VUE_APP_IMAGEROUTE}${news.image}`,
+      }));
+    },
+    formatDate(isoDate) {
+      return moment(isoDate).format('MM/DD/YYYY');
+    },
+
   },
   mounted() {
     this.newsId = this.$route.params.id;
-    this.content = `El humor en República Dominicana ha experimentado una transformación notable...`; // Resumido para este ejemplo
-    this.createdAt = "11-20-2024";
-    this.title = "La evolución del humor en República Dominicana: de Macario y Felipa a las redes sociales y podcasts";
-    this.category = "Nacionales";
+    this.getMostReadNews();
+    this.getNew(this.newsId);
+
   },
 };
 </script>

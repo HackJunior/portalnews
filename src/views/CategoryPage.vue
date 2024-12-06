@@ -1,7 +1,7 @@
 <template>
   <HeaderHome />
   <div class="categoria-page">
-    <!-- Encabezado con línea decorativa -->
+
     <div class="category-header">
       <h1 class="category-title">{{ categoria }}</h1>
       <div class="line"></div>
@@ -12,8 +12,8 @@
       <!-- Noticias principales -->
       <div class="main-news">
         <div class="news-item" v-for="(news, index) in paginatedNews" :key="index">
-          <NewsCard :imageUrl="portadaImage" :category="news.category" :newsId="news.id"/>
-          <p class="news-title" @click="goToDetail(news.id)">{{ news.title }}</p>
+          <NewsCard :imageUrl="news.image" :category="news.category" :newsId="news._id"/>
+          <p class="news-title" @click="goToDetail(news._id)">{{ news.title }}</p>
         </div>
       </div>
 
@@ -27,8 +27,8 @@
             v-for="(news, index) in mostReadNews"
             :key="index"
           >
-            <div class="most-read-content">
-              <img :src="portadaImage" alt="Noticia" class="most-read-image" />
+            <div class="most-read-content selectable" @click="goToDetail(news._id)">
+              <img :src="news.image" alt="Noticia" class="most-read-image" />
               <p class="most-read-title-text">{{ news.title }}</p>
             </div>
             <div
@@ -58,41 +58,33 @@
 
 
   </div>
+
+  <Footer />
 </template>
 
 <script>
 import HeaderHome from '@/components/Home/HeaderHome.vue';
 import NewsCard from '@/components/NewsCard.vue';
-import portadaImage from '@/assets/portada.jpg'; // Importamos la imagen
+import Footer from "@/components/Home/footerHome.vue";
+import axios from "axios";
+
 
 export default {
   components: {
     HeaderHome,
     NewsCard,
+    Footer
   },
   data() {
     return {
-      portadaImage, // Usamos la imagen importada
-      newsList: Array.from({ length: 70 }, (_, i) => ({
-        id: i + 1,
-        category: "Internacionales",
-        title:
-          i % 3 === 0
-            ? `Título breve para la noticia`
-            : i % 3 === 1
-            ? `Este es un título de longitud regular para ocupar algo más de espacio`
-            : `Este es un título largo que permite probar cómo se comportan textos más extensos y que sigan visibles correctamente sin cortar palabras.`,
-      })),
-      mostReadNews: Array.from({ length: 6 }, (_, i) => ({
-        title: `Noticia destacada número ${i + 1} con un título largo para probar alineaciones y espaciado correcto`,
-      })),
-      currentPage: 1,
-      itemsPerPage: 18,
+      newsList: "",
+      mostReadNews: "",
+      itemsPerPage: 15,
+      currentPage:1,
     };
   },
   computed: {
     categoria() {
-      // Obtiene la categoría desde los parámetros de la ruta
       return this.$route.params.categoria || "Sin Categoría";
     },
     totalPages() {
@@ -132,7 +124,49 @@ export default {
       const route = `/news/${IdNews}`;
       this.$router.push(route);
     },
+    async getNewsCategory(){
+      const token = localStorage.getItem('authToken');
+      console.log(this.categoria);
+      const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news`,{
+        params:{
+          category: this.$route.params.categoria,
+        }
+      }, 
+      {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+      });
+      this.newsList = response.data.map(news => ({
+        ...news,
+        image: `${process.env.VUE_APP_IMAGEROUTE}${news.image}`,
+      }));
+      console.log(this.newsList);
+    },
+    async getMostReadNews(){
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news/top`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+      });
+      this.mostReadNews = response.data.map(news => ({
+        ...news,
+        image: `${process.env.VUE_APP_IMAGEROUTE}${news.image}`,
+      }));
+
+      console.log(this.mostReadNews);
+    }
   },
+  mounted(){
+    this.getNewsCategory(),
+    this.getMostReadNews()
+  },
+    watch: {
+    '$route.params.categoria': function () {
+      this.getNewsCategory();
+    }
+  }
 };
 </script>
 
@@ -186,25 +220,33 @@ export default {
   gap: 20px;
   flex: 3;
 }
-
 .news-item {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: center;
+  height: 250px; /* Altura total: imagen + texto */
+  width: 300px; /* Ancho fijo */
+  overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .news-title {
-  font-size: 1.2rem; /* Tamaño más grande */
-  font-weight: bold; /* Bold aplicado */
-  color: #3daaa0; /* Verde inicial */
+  font-size: 1rem;
+  font-weight: bold;
+  color: #3daaa0;
   margin-top: 10px;
-  text-align: left;
-  line-height: 1.5; /* Espaciado entre líneas */
-  white-space: normal; /* Permite que el texto salte a la siguiente línea */
-  word-wrap: break-word; /* Rompe palabras largas si es necesario */
-  transition: color 0.3s, text-decoration 0.3s; /* Efecto suave */
-  cursor: pointer; /* Mostrar como clickeable */
+  text-align: center;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 
 .news-title:hover {
   color: #f2665e; /* Rojizo al hacer hover */
@@ -308,4 +350,32 @@ export default {
 .pagination button:hover:not(.active):not(:disabled) {
   background-color: #e0e0e0;
 }
+/* Estilo base del contenedor */
+.selectable {
+  cursor: pointer; /* Cambia el cursor a "pointer" para indicar interactividad */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transiciones suaves */
+}
+
+/* Efecto de hover */
+.selectable:hover {
+  transform: scale(1.02); /* Agranda ligeramente el elemento */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Añade una sombra */
+}
+
+/* Cambia el color del texto al hacer hover */
+.selectable:hover .most-read-title-text {
+  color: #f2665e; /* Cambia a un color rojizo */
+  text-decoration: underline; /* Añade subrayado */
+}
+
+/* Cambia la opacidad de la imagen al hacer hover */
+.selectable:hover .most-read-image {
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+
+footer {
+  margin-top: auto; 
+} 
 </style>

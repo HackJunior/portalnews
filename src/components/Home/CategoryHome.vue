@@ -39,7 +39,8 @@
 
 <script>
 import axios from "axios";
-const apiUrl = "/api";
+const token = localStorage.getItem('authToken');
+
 export default {
   data() {
     return {

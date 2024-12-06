@@ -7,19 +7,13 @@
         <img src="@/assets/logoSTE.png" alt="Logo" />
       </div>
       <div class="social-icons">
-        <a href="https://www.instagram.com" target="_blank" rel="noopener">
+        <a href="https://www.instagram.com/sdetoday?igsh=MXd4eWZobzR4OWwyZw%3D%3D" target="_blank" rel="noopener">
           <img src="@/assets/icons/instagram.svg" alt="Instagram" />
         </a>
-        <a href="https://www.facebook.com" target="_blank" rel="noopener">
-          <img src="@/assets/icons/facebook.svg" alt="Facebook" />
-        </a>
-        <a href="https://www.twitter.com" target="_blank" rel="noopener">
+        <a href="https://x.com/sdetoday" target="_blank" rel="noopener">
           <img src="@/assets/icons/twitter.svg" alt="Twitter" />
         </a>
-        <a href="https://www.whatsapp.com" target="_blank" rel="noopener">
-          <img src="@/assets/icons/whatsapp.svg" alt="WhatsApp" />
-        </a>
-        <a href="https://www.youtube.com" target="_blank" rel="noopener">
+        <a href="https://www.youtube.com/@TrulyKurious" target="_blank" rel="noopener">
           <img src="@/assets/icons/youtube.svg" alt="YouTube" />
         </a>
       </div>
