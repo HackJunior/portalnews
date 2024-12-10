@@ -48,7 +48,6 @@
     <img :src="TrulyKuriousImage" class="truly-kurious-image" alt="Truly Kurious" />
   </section>
 
-  <CategoryHome/>
   <Footer />
 </template>
 
@@ -60,9 +59,8 @@ import TrulyImage from "@/assets/publicidad/publicidad_1.jpg";
 import Footer from "@/components/Home/footerHome.vue";
 import axios from "axios";
 import TrulyKuriousImage from "@/assets/truly_kurious.jpg"; 
-import CategoryHome from "@/components/Home/CategoryHome.vue";
 export default {
-  components: { HeaderHome, NewsWithTitle,Footer,CategoryHome },
+  components: { HeaderHome, NewsWithTitle,Footer },
   data() {
     return {
       PortadaId:"",
