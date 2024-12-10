@@ -16,12 +16,14 @@ FROM nginx:alpine
 # Copia los archivos compilados en el directorio de NGINX
 COPY --from=build /app/dist /usr/share/nginx/html
 
-COPY /etc/letsencrypt /etc/letsencrypt
+# Copia los certificados locales al contenedor
+COPY ./certs /etc/letsencrypt
 
 # Copia la configuración personalizada de NGINX
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expone el puerto 80 para el contenedor
 EXPOSE 80
+EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"]
