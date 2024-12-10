@@ -16,6 +16,8 @@ FROM nginx:alpine
 # Copia los archivos compilados en el directorio de NGINX
 COPY --from=build /app/dist /usr/share/nginx/html
 
+COPY /etc/letsencrypt /etc/letsencrypt
+
 # Copia la configuración personalizada de NGINX
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
