@@ -7,7 +7,7 @@
         :category="category" 
         :title="headline" 
         :link="'https://example.com'" 
-        height="525px"
+        height="600px"
         fontSize="3rem"
         :id="PortadaId"
       />
