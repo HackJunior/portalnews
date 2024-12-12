@@ -1,33 +1,33 @@
-<template>
-  <section class="category-home-container">
+<template> 
+  <section :class="['category-home-container', backgroundColorClass]">
     <div class="category-header">
-      <h2 class="category-title">Deportes</h2>
+      <h2 class="category-title" :class="{ 'text-green': backgroundColor === 'white' }">{{ message }}</h2>
       <a href="about:blank" class="see-more-link">
         Ver más <span class="arrow">&#x27A4;</span>
       </a>
     </div>
     <div class="category-news-wrapper">
       <div class="category-news">
-        <div class="main-news">
+        <div class="main-news" @click="redirectToNews(mainItem.id)">
+          <img :src="mainItem.image" alt="Noticia principal" class="main-image" />
           <div class="main-category">
             <a href="about:blank" class="category-link">
-              <div class="category-label">{{ mainItem.category }}</div>
+              <span class="news-category" :style="{ fontSize: computedFontSize }">{{ mainItem.category }}</span>
             </a>
           </div>
-          <img :src="mainItem.image" alt="Noticia principal" class="main-image" />
-          <a href="about:blank" class="title-link">
+          <a href="about:blank" class="title-link no-underline">
             <div class="main-title">{{ mainItem.title }}</div>
           </a>
         </div>
         <div class="side-news">
-          <div v-for="(item, index) in sideItems" :key="index" class="side-item">
+          <div v-for="(item, index) in sideItems" :key="index" class="side-item" @click="redirectToNews(item.id)">
+            <img :src="item.image" alt="Noticia secundaria" class="side-image" />
             <div class="side-category">
               <a href="about:blank" class="category-link">
-                <div class="category-label">{{ item.category }}</div>
+                <span class="news-category" :style="{ fontSize: computedFontSize }">{{ item.category }}</span>
               </a>
             </div>
-            <img :src="item.image" alt="Noticia secundaria" class="side-image" />
-            <a href="about:blank" class="title-link">
+            <a href="about:blank" class="title-link no-underline">
               <div class="side-title">{{ item.title }}</div>
             </a>
           </div>
@@ -39,35 +39,68 @@
 
 <script>
 import axios from "axios";
-const token = localStorage.getItem('authToken');
-
 export default {
   data() {
     return {
-      mainItem: null,
+      mainItem: {},
       sideItems: [],
     };
+  },
+  methods: {
+    async getPortada() {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news`, {
+          params: {
+            tags: "Importante",
+            category: this.message
+          },
+        });
+
+        if (response.data && response.data.length > 0) {
+          this.mainItem = {
+            ...response.data[0],
+            image: `${process.env.VUE_APP_IMAGEROUTE}${response.data[0].image}`,
+          };
+          this.sideItems = response.data.slice(1, 5).map(item => ({
+            ...item,
+            image: `${process.env.VUE_APP_IMAGEROUTE}${item.image}`,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      }
+    },
+    redirectToNews(id) {
+      this.$router.push(`/news/${id}`);
+    },
   },
   props: {
     message: {
       type: String,
       required: true,
     },
+    backgroundColor: {
+      type: String,
+      required: true,
+      validator(value) {
+        return ["red", "green", "white"].includes(value);
+      },
+    },
   },
-  async mounted() {
-    
-    try {
-      const response = await axios.get(`${apiUrl}/news`, {
-        params: { category:  this.message}
-      });
-      console.log('Home',response.data);
-
-      const [mainItem, ...sideItems] = response.data;
-      this.mainItem = mainItem;
-      this.sideItems = sideItems.slice(-4);
-    } catch (error) {
-      console.error("Error al cargar las noticias:", error);
-    }
+  computed: {
+    backgroundColorClass() {
+      return {
+        red: "background-red",
+        green: "background-green",
+        white: "background-white",
+      }[this.backgroundColor];
+    },
+    computedFontSize() {
+      return "1.5rem"; 
+    },
+  },
+  mounted() {
+    this.getPortada();
   },
 };
 </script>
@@ -76,9 +109,20 @@ export default {
 .category-home-container {
   margin-top: 100px;
   margin-bottom: 100px;
-  width: 100%; 
-  background-color: #3DAAA0; 
+  width: 100%;
   padding: 20px 0;
+}
+
+.background-red {
+  background-color: #E84A4A; /* Rojo del logo */
+}
+
+.background-green {
+  background-color: #3DAAA0; /* Verde del logo */
+}
+
+.background-white {
+  background-color: white;
 }
 
 .category-header {
@@ -86,7 +130,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
-  border-bottom: 5px solid white;
   padding-bottom: 5px;
   position: relative;
   max-width: 1500px;
@@ -94,10 +137,24 @@ export default {
   margin-right: auto;
 }
 
+.category-header::after {
+  content: "";
+  display: block;
+  height: 5px;
+  background: linear-gradient(to right, #ffc107 15%, white 15%);
+  width: 100%;
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+}
+
 .category-title {
-  color: white; /* Ajuste de color a blanco */
   font-size: 1.8em;
   font-weight: bold;
+}
+
+.text-green {
+  color: #3DAAA0; /* Verde del logo */
 }
 
 .see-more-link {
@@ -133,14 +190,18 @@ export default {
   border-radius: 5px;
 }
 
-.main-category .category-label {
-  background-color: #3DAAA0;
-  padding: 5px 10px;
-  border-radius: 3px;
-  font-size: 0.9em;
-  font-weight: bold;
-  display: inline-block;
+.news-category {
+  background: linear-gradient(90deg, #3daaa0, #f2665e); /* Degradado verde y rojo */
   color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 10px 20px; /* Espaciado interno */
+  border-radius: 30px; /* Bordes redondeados */
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap; /* Evita saltos de línea */
+  width: fit-content; /* El badge se ajustará al contenido */
+  max-width: none; /* Elimina restricciones de ancho máximo */
   position: absolute;
   top: 10px;
   left: 10px;
@@ -153,7 +214,7 @@ export default {
   transition: color 0.3s;
   color: white;
   text-align: justify;
-  text-decoration: none; /* Remueve la línea debajo */
+  text-decoration: none; /* Remove blue underline */
 }
 
 .main-title:hover {
@@ -170,18 +231,6 @@ export default {
   position: relative;
 }
 
-.side-category .category-label {
-  background-color: #3DAAA0;
-  padding: 3px 8px;
-  border-radius: 3px;
-  font-size: 0.8em;
-  font-weight: bold;
-  color: white;
-  position: absolute;
-  top: 10px;
-  left: 10px;
-}
-
 .side-image {
   width: 100%;
   height: auto;
@@ -195,7 +244,7 @@ export default {
   transition: color 0.3s;
   color: white;
   text-align: justify;
-  text-decoration: none; 
+  text-decoration: none; /* Remove blue underline */
 }
 
 .side-title:hover {
@@ -204,16 +253,5 @@ export default {
 
 .category-link {
   text-decoration: none;
-}
-
-.category-header::after {
-  content: '';
-  display: block;
-  height: 5px;
-  background: linear-gradient(to right, #ffc107 15%, white 15%);
-  width: 100%;
-  position: absolute;
-  bottom: -2px;
-  left: 0;
 }
 </style>
