@@ -2,7 +2,7 @@
   <div class="news-with-title" :style="{ height: computedHeight, width: computedWidth }">
     <img :src="imageUrl" alt="Imagen de noticia" class="news-image" @click="onTitleClick(id)"/>
     <div class="title-overlay">
-      <span class="news-category" :style="{ fontSize: computedFontSize }">
+      <span class="news-category" :style="{ fontSize: computedFontSize }" @click="navigateToCategory(category)" >
         {{ category }}
       </span>
       <div class="news-title" :style="{ fontSize: computedFontSize }" @click="onTitleClick(id)">
@@ -64,6 +64,10 @@ export default {
       const route = `/news/${id}`;
       this.$router.push(route);
     },
+    navigateToCategory(category) {
+      const route = `/${category.toLowerCase()}`;
+      this.$router.push(route);
+    },
   },
 };
 </script>
@@ -81,7 +85,7 @@ export default {
 .news-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   position: absolute;
   top: 0;
   left: 0;

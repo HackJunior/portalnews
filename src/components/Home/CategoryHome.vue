@@ -2,33 +2,33 @@
   <section :class="['category-home-container', backgroundColorClass]">
     <div class="category-header">
       <h2 class="category-title" :class="{ 'text-green': backgroundColor === 'white' }">{{ message }}</h2>
-      <a href="about:blank" class="see-more-link">
+      <a @click="redirectToNews(mainItem._id)" class="see-more-link">
         Ver más <span class="arrow">&#x27A4;</span>
       </a>
     </div>
     <div class="category-news-wrapper">
       <div class="category-news">
-        <div class="main-news" @click="redirectToNews(mainItem.id)">
-          <img :src="mainItem.image" alt="Noticia principal" class="main-image" />
+        <div class="main-news">
+          <img :src="mainItem.image" alt="Noticia principal" class="main-image"  @click="redirectToNews(mainItem._id)"/>
           <div class="main-category">
-            <a href="about:blank" class="category-link">
-              <span class="news-category" :style="{ fontSize: computedFontSize }">{{ mainItem.category }}</span>
+            <a class="category-link">
+              <span class="news-category" :style="{ fontSize: computedFontSize }" @click="navigateToCategory(mainItem.category)">{{ mainItem.category }}</span>
             </a>
           </div>
-          <a href="about:blank" class="title-link no-underline">
-            <div class="main-title">{{ mainItem.title }}</div>
+          <a class="title-link no-underline">
+            <div class="main-title" :style="{ color: backgroundColor === 'white' ? '#3DAAA0' : 'white' }" @click="redirectToNews(mainItem._id)">{{ mainItem.title }}</div>
           </a>
         </div>
         <div class="side-news">
           <div v-for="(item, index) in sideItems" :key="index" class="side-item" @click="redirectToNews(item.id)">
-            <img :src="item.image" alt="Noticia secundaria" class="side-image" />
+            <img :src="item.image" alt="Noticia secundaria"  @click="redirectToNews(item._id)" class="side-image" />
             <div class="side-category">
-              <a href="about:blank" class="category-link">
-                <span class="news-category" :style="{ fontSize: computedFontSize }">{{ item.category }}</span>
+              <a class="category-link">
+                <span class="news-category" :style="{ fontSize: computedFontSize }"  @click="navigateToCategory(item.category)">{{ item.category }}</span>
               </a>
             </div>
-            <a href="about:blank" class="title-link no-underline">
-              <div class="side-title">{{ item.title }}</div>
+            <a  class="title-link no-underline">
+              <div class="side-title" :style="{ color: backgroundColor === 'white' ? '#3DAAA0' : 'white' }" @click="redirectToNews(item._id)">{{ item.title }}</div>
             </a>
           </div>
         </div>
@@ -72,6 +72,10 @@ export default {
     },
     redirectToNews(id) {
       this.$router.push(`/news/${id}`);
+    },
+    navigateToCategory(category) {
+      const route = `/${category.toLowerCase()}`;
+      this.$router.push(route);
     },
   },
   props: {
@@ -151,6 +155,7 @@ export default {
 .category-title {
   font-size: 1.8em;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .text-green {
@@ -215,6 +220,7 @@ export default {
   color: white;
   text-align: justify;
   text-decoration: none; /* Remove blue underline */
+  cursor: pointer;
 }
 
 .main-title:hover {

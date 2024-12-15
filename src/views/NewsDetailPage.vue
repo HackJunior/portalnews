@@ -220,6 +220,10 @@ export default {
   text-align: justify;
 }
 
+.content-paragraph {
+ white-space: pre-line;
+}
+
 .content-paragraph::first-letter {
   font-size: 4rem; /* Letra capital grande */
   font-weight: bold;

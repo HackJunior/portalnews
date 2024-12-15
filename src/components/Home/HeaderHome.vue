@@ -4,7 +4,7 @@
   <header class="header-home">
     <div class="header-content">
       <div class="logo">
-        <img src="@/assets/logoSTE.png" alt="Logo" />
+        <img src="@/assets/logoSTE.png" alt="Logo" @click="goToHome"/>
       </div>
       <div class="social-icons">
         <a href="https://www.instagram.com/sdetoday?igsh=MXd4eWZobzR4OWwyZw%3D%3D" target="_blank" rel="noopener">
@@ -56,9 +56,12 @@ export default {
   },
   methods: {
     navigateToCategory(category) {
-      const route = `/${category.toLowerCase()}`;
+      const route = `/${category}`;
       this.$router.push(route);
     },
+    goToHome(){
+      this.$router.push('/');
+    }
   },
 };
 

@@ -7,16 +7,13 @@
         :category="category" 
         :title="headline" 
         :link="'https://example.com'" 
-        height="600px"
+        height="560px"
         fontSize="3rem"
         :id="PortadaId"
       />
     </div>  
 
     <div class="portada-side">
-      <div class="truly-section">
-        <img :src="TrulyImage" class="truly-image" alt="Publicidad" />
-      </div>
       <div class="video-section">
         <div class="video-carousel">
           <button class="carousel-arrow left" @click="prevVideo">&#8249;</button>
@@ -34,7 +31,18 @@
           <button class="carousel-arrow right" @click="nextVideo">&#8250;</button>
           <button class="mute-button" @click="toggleMute">{{ isMuted ? 'Unmute' : 'Mute' }}</button>
         </div>
-      </div>
+    </div>
+    <div class="truly-section">
+      <iframe 
+          width="100%" 
+          height="280" 
+          :src="videoUrl" 
+          title="YouTube video player" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen
+        ></iframe>
+    </div>
     </div>
   </section>
 
@@ -116,8 +124,7 @@ export default {
       videos: [
         require("@/assets/videos/video1.mp4"),
         require("@/assets/videos/video2.mp4"),
-        require("@/assets/videos/video3.mp4"),
-        require("@/assets/videos/video4.mp4"),
+        require("@/assets/videos/video3.mp4")
       ],
       currentVideo: 0,
       hovering: false,
@@ -196,7 +203,7 @@ export default {
 .portada-container {
   display: flex;
   gap: 20px;
-  max-width: 1200px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 20px 0;
 }
@@ -218,6 +225,8 @@ export default {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  width: 480px;
+  height: 270px;
 }
 
 .truly-image {
