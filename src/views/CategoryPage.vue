@@ -12,8 +12,17 @@
       <!-- Noticias principales -->
       <div class="main-news">
         <div class="news-item" v-for="(news, index) in paginatedNews" :key="index">
-          <NewsCard :imageUrl="news.image" :category="news.category" :newsId="news._id"/>
-          <p class="news-title" @click="goToDetail(news._id)">{{ news.title }}</p>
+          <NewsCard
+            :imageUrl="news.image"
+            :category="news.category"
+            :newsId="news._id"
+          />
+          <p
+            class="news-title"
+            @click="goToDetail(news._id)"
+          >
+            {{ news.title }}
+          </p>
         </div>
       </div>
 
@@ -54,9 +63,6 @@
       <button @click="goToNextPage" :disabled="currentPage === totalPages">»</button>
     </div>
 
-
-
-
   </div>
 
   <Footer />
@@ -77,7 +83,7 @@ export default {
   },
   data() {
     return {
-      newsList: "",
+      newsList: [],
       mostReadNews: "",
       itemsPerPage: 15,
       currentPage:1,
@@ -216,7 +222,7 @@ export default {
 /* Noticias principales */
 .main-news {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Tres columnas */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Diseño flexible */
   gap: 20px;
   flex: 3;
 }
@@ -225,14 +231,13 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  height: 250px; /* Altura total: imagen + texto */
-  width: 300px; /* Ancho fijo */
-  overflow: hidden;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
   padding: 10px;
   box-sizing: border-box;
+  min-height: 350px; /* Asegura que todas las tarjetas tengan la misma altura */
 }
 
 .news-title {
@@ -242,14 +247,28 @@ export default {
   margin-top: 10px;
   text-align: center;
   line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal; /* Permite saltos de línea */
+  overflow-wrap: break-word; /* Divide palabras largas */
 }
-
 
 .news-title:hover {
   color: #f2665e; /* Rojizo al hacer hover */
+}
+/* Asegura que las tarjetas tengan altura consistente */
+.news-card {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.news-card .news-content {
+  flex-grow: 1;
+}
+
+.news-card .news-title,
+.news-card .news-description {
+  min-height: 50px;
 }
 
 /* Noticias más leídas */
