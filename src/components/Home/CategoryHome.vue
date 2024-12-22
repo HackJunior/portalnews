@@ -39,11 +39,14 @@
 
 <script>
 import axios from "axios";
+
 export default {
   data() {
     return {
-      mainItem: {},
-      sideItems: [],
+      mainItem: {
+      },
+      sideItems: [
+      ],
     };
   },
   methods: {
@@ -259,5 +262,26 @@ export default {
 
 .category-link {
   text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .category-news {
+    grid-template-columns: 1fr; /* Change to single column layout */
+    gap: 10px;
+    padding: 10px; /* Add padding for mobile view */
+  }
+
+  .side-news {
+    grid-template-columns: 1fr; /* Change to single column layout */
+    padding: 10px; /* Add padding for mobile view */
+  }
+
+  .main-news {
+    padding: 10px; /* Add padding for mobile view */
+  }
+
+  .side-item {
+    padding: 10px; /* Add padding for mobile view */
+  }
 }
 </style>
