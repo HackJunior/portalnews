@@ -397,4 +397,20 @@ export default {
 footer {
   margin-top: auto; 
 } 
+
+@media (max-width: 768px) {
+  .news-container {
+    flex-direction: column;
+  }
+
+  .main-news {
+    grid-template-columns: 1fr; /* Change to single column layout */
+    padding: 10px; /* Add padding for mobile view */
+  }
+
+  .sidebar-news {
+    margin-top: 20px; /* Add margin to separate from main-news */
+    padding: 10px; /* Add padding for mobile view */
+  }
+}
 </style>
