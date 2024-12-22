@@ -50,14 +50,17 @@ export default {
   },
   computed: {
     computedHeight() {
-      return this.height;
+      return this.isMobile ? '300px' : this.height;
     },
     computedWidth() {
       return this.width;
     },
     computedFontSize() {
-      return this.fontSize;
+      return this.isMobile ? '1.5rem' : this.fontSize;
     },
+    isMobile() {
+      return window.innerWidth <= 768;
+    }
   },
   methods: {
     onTitleClick(id) {
@@ -69,6 +72,12 @@ export default {
       this.$router.push(route);
     },
   },
+  mounted() {
+    window.addEventListener('resize', this.checkMobile);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.checkMobile);
+  }
 };
 </script>
 
@@ -115,7 +124,6 @@ export default {
   width: fit-content; /* El badge se ajustará al contenido */
   max-width: none; /* Elimina restricciones de ancho máximo */
 }
-
 
 .news-title {
   font-weight: 900;
