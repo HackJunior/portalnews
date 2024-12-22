@@ -88,7 +88,7 @@ export default {
     this.checkMobile();
     window.addEventListener('resize', this.checkMobile);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener('resize', this.checkMobile);
   }
 };
