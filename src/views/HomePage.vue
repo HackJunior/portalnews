@@ -42,7 +42,7 @@
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
           allowfullscreen
         ></iframe>
-    </div>
+    </div> 
     </div>
   </section>
 
@@ -109,6 +109,8 @@ import Footer from "@/components/Home/footerHome.vue";
 import TrulyKuriousImage from "@/assets/truly_kurious.jpg"; 
 import CategoryHome from "@/components/Home/CategoryHome.vue";
 import axios from "axios";
+
+
 export default {
   components: { HeaderHome, NewsWithTitle, Footer, CategoryHome },
   data() {
@@ -120,7 +122,8 @@ export default {
       TrulyImage,
       TrulyKuriousImage,
       videoUrl: "https://www.youtube.com/embed/kNt-81PAE94",
-      gridNews: [],
+      gridNews: [
+      ],
       videos: [
         require("@/assets/videos/video1.mp4"),
         require("@/assets/videos/video2.mp4"),
@@ -139,8 +142,6 @@ export default {
         },
       });
 
-      console.log(response);
-
       this.PortadaId = response.data[0]._id;
       this.mainImage = process.env.VUE_APP_IMAGEROUTE + response.data[0].image;
       this.category = response.data[0].category;
@@ -152,7 +153,7 @@ export default {
           tags: "Portada Bottom",
         },
       });
-      this.gridNews = response.data.map((news) => ({
+      this.gridNews = response.data.slice(0, 6).map((news) => ({
         ...news,
         image: `${process.env.VUE_APP_IMAGEROUTE}${news.image}`,
       }));
@@ -333,5 +334,36 @@ footer {
 
 .mute-button:hover {
   background-color: rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 768px) {
+  .portada-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .portada-main,
+  .portada-side,
+  .truly-section {
+    width: 100%;
+    max-width: 480px;
+    padding: 10px; /* Add padding for mobile view */
+  }
+
+  .truly-section,
+  .video-section {
+    width: 100%; /* Remove fixed width for mobile view */
+    height: auto; /* Remove fixed height for mobile view */
+  }
+
+  .news-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    padding: 10px; /* Add padding for mobile view */
+  }
+
+  .truly-kurious-section {
+    padding: 10px; /* Add padding for mobile view */
+  }
 }
 </style>
