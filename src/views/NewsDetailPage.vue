@@ -67,12 +67,12 @@ export default {
   components: { HeaderHome },
   data() {
     return {
-      newsId: null,
-      content: null,
+      newsId: "",
+      content: "",
       createdAt: null,
-      title: null,
-      category: null,
-      imageUrl: null,
+      title: "",
+      category: "",
+      imageUrl: "",
       mostReadNews: [],
     };
   },
@@ -297,5 +297,63 @@ export default {
   height: 1px;
   background-color: #ddd;
   margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .news-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px; /* Add padding for mobile view */
+  }
+
+  .main-news {
+    width: 100%;
+    max-width: 480px;
+    padding: 10px; /* Add padding for mobile view */
+  }
+
+  .news-title {
+    text-align: center; /* Center the title */
+  }
+
+  .news-detail-content {
+    align-items: center; /* Center the content */
+  }
+
+  .image-wrapper {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .news-image {
+    width: 100%;
+    height: 100%;
+    max-width: 480px;
+    max-height: 480px;
+    object-fit: cover; /* Ensure the image is square */
+  }
+
+  .news-date {
+    top: 10px;
+    right: 10px;
+  }
+
+  .news-body {  
+    text-align: justify; /* Justify the body content */
+    padding: 20px; /* Add padding to the news body */
+  }
+
+  .sidebar-news {
+    margin-top: 20px; /* Add margin to separate from main-news */
+    padding: 10px; /* Add padding for mobile view */
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .breadcrumb {
+    justify-content: center; /* Center the breadcrumb */
+  }
 }
 </style>
