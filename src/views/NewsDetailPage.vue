@@ -114,7 +114,17 @@ export default {
     this.newsId = this.$route.params.id;
     this.getMostReadNews();
     this.getNew(this.newsId);
+    //document.dispatchEvent(new Event('render-event'));
 
+  },
+  metaInfo() {
+    return {
+      title: this.title,
+      meta: [
+        { property: 'og:title', content: this.title },
+        { property: 'og:image', content: this.imageUrl },
+      ],
+    };
   },
 };
 </script>
