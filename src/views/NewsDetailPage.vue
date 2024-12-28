@@ -62,7 +62,7 @@
 import HeaderHome from "@/components/Home/HeaderHome.vue";
 import axios from "axios";
 import moment from "moment";
-import { useHead } from '@vueuse/head';
+//import { useHead } from '@vueuse/head';
 
 
 export default {
@@ -111,15 +111,41 @@ export default {
     formatDate(isoDate) {
       return moment(isoDate).format('MM/DD/YYYY');
     },
+    updateMetaTags() {
+    // Actualiza el título de la página
+    document.title = this.title;
+
+    // Limpia los meta tags existentes de Open Graph
+    const existingMetaTags = document.querySelectorAll('meta[property^="og:"]');
+    existingMetaTags.forEach((tag) => tag.remove());
+
+    // Agrega nuevos meta tags dinámicos
+    const metaTags = [
+      { property: 'og:title', content: this.title },
+      { property: 'og:description', content: this.content.substring(0, 150) }, // Resumen de la noticia
+      { property: 'og:image', content: this.imageUrl },
+      { property: 'og:url', content: window.location.href },
+      { property: 'og:type', content: 'article' },
+    ];
+
+    metaTags.forEach(({ property, content }) => {
+      const metaTag = document.createElement('meta');
+      metaTag.setAttribute('property', property);
+      metaTag.setAttribute('content', content);
+      document.head.appendChild(metaTag);
+    });
+  },
 
   },
   mounted() {
     this.newsId = this.$route.params.id;
     this.getMostReadNews();
-    this.getNew(this.newsId);
-    //document.dispatchEvent(new Event('render-event'));
+    this.getNew(this.newsId).then(() => {
+    this.updateMetaTags(); 
+    });
+   
   },
-  setup() {
+  /*setup() {
     useHead({
       title: this.title,
       meta: [
@@ -127,7 +153,7 @@ export default {
         { property: 'og:image', content: this.imageUrl },
       ],
     });
-  },
+  },*/
 };
 </script>
 
