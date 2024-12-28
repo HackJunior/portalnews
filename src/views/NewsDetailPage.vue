@@ -62,9 +62,12 @@
 import HeaderHome from "@/components/Home/HeaderHome.vue";
 import axios from "axios";
 import moment from "moment";
+import { useHead } from '@vueuse/head';
+
 
 export default {
   components: { HeaderHome },
+  
   data() {
     return {
       newsId: "",
@@ -115,16 +118,15 @@ export default {
     this.getMostReadNews();
     this.getNew(this.newsId);
     //document.dispatchEvent(new Event('render-event'));
-
   },
-  metaInfo() {
-    return {
+  setup() {
+    useHead({
       title: this.title,
       meta: [
         { property: 'og:title', content: this.title },
         { property: 'og:image', content: this.imageUrl },
       ],
-    };
+    });
   },
 };
 </script>

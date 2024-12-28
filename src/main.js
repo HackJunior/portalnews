@@ -1,10 +1,11 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import { createMetaManager } from 'vue-meta';
+import { createHead } from '@vueuse/head';
+
 
 const app = createApp(App);
-const metaManager = createMetaManager();
+const head = createHead();
 app.use(router);
-app.use(metaManager);
+app.use(head);
 app.mount('#app');
