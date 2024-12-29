@@ -8,10 +8,10 @@
       </span>
       <span class="breadcrumb-separator">→</span>
       <span class="breadcrumb-item">
-        <router-link :to="`/${category}`">{{ category }}</router-link>
+        <router-link :to="`/${state.category}`">{{ state.category }}</router-link>
       </span>
       <span class="breadcrumb-separator">→</span>
-      <span class="breadcrumb-item active">{{ title }}</span>
+      <span class="breadcrumb-item active">{{ state.title }}</span>
     </nav>
 
     <!-- Línea decorativa -->
@@ -21,14 +21,14 @@
     <div class="news-container">
       <!-- Título y contenido principal -->
       <div class="main-news">
-        <h1 class="news-title">{{ title }}</h1>
+        <h1 class="news-title">{{ state.title }}</h1>
         <div class="news-detail-content">
           <div class="image-wrapper">
-            <img :src="imageUrl" alt="Noticia" class="news-image" />
-            <p class="news-date">{{ formatDate(createdAt) }}</p>
+            <img :src="state.imageUrl" alt="Noticia" class="news-image" />
+            <p class="news-date">{{ formatDate(state.createdAt) }}</p>
           </div>
           <div class="news-body">
-            <p class="content-paragraph">{{ content }}</p>
+            <p class="content-paragraph">{{ state.content }}</p>
           </div>
         </div>
       </div>
@@ -40,7 +40,7 @@
           <div class="most-read-line"></div>
           <div
             class="most-read-item"
-            v-for="(news, index) in mostReadNews"
+            v-for="(news, index) in state.mostReadNews"
             :key="index"
           >
             <div class="most-read-content">
@@ -49,7 +49,7 @@
             </div>
             <div
               class="most-read-divider"
-              v-if="index < mostReadNews.length - 1"
+              v-if="index < state.mostReadNews.length - 1"
             ></div>
           </div>
         </div>
@@ -62,14 +62,17 @@
 import HeaderHome from "@/components/Home/HeaderHome.vue";
 import axios from "axios";
 import moment from "moment";
-import { useHead } from '@vueuse/head';
-
+import { reactive, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { useHead } from "@vueuse/head";
 
 export default {
   components: { HeaderHome },
-  
-  data() {
-    return {
+
+  setup() {
+    const route = useRoute();
+
+    const state = reactive({
       newsId: "",
       content: "",
       createdAt: null,
@@ -77,56 +80,75 @@ export default {
       category: "",
       imageUrl: "",
       mostReadNews: [],
-    };
-  },
-  methods:{
-    async getNew(Newsid){
-      
-      const token = localStorage.getItem('authToken');
-      const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news`, {params:{id: Newsid}}, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-      });
-      this.title = response.data.title;
-      this.category = response.data.category;
-      this.imageUrl = process.env.VUE_APP_IMAGEROUTE + response.data.image;
-      console.log(this.imageUrl);
-      this.createdAt = response.data.createdAt;
-      this.content= response.data.content;
-      this.newsId = Newsid;
-    },
-    async getMostReadNews(){
-      const token = localStorage.getItem('authToken');
-      const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news/top`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-      });
-      this.mostReadNews = response.data.map(news => ({
-        ...news,
-        image: `${process.env.VUE_APP_IMAGEROUTE}${news.image}`,
-      }));
-    },
-    formatDate(isoDate) {
-      return moment(isoDate).format('MM/DD/YYYY');
-    }
-
-  },
-  mounted() {
-    this.newsId = this.$route.params.id;  
-    this.getMostReadNews();
-    this.getNew(this.newsId);
-  },
-  setup() {
-    useHead({
-      title: this.title,
-      meta: [
-        { property: 'og:title', content: this.title },
-        {property: 'og:description', content: this.content.substring(0, 150) },
-        { property: 'og:image', content: this.imageUrl },
-      ],
     });
+
+    const fetchNews = async (newsId) => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await axios.get(
+          `${process.env.VUE_APP_BACKENDURL}/news`,
+          { params: { id: newsId } },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        state.title = response.data.title;
+        state.category = response.data.category;
+        state.imageUrl = `${process.env.VUE_APP_IMAGEROUTE}${response.data.image}`;
+        state.createdAt = response.data.createdAt;
+        state.content = response.data.content;
+        state.newsId = newsId;
+
+        // Actualizar las etiquetas meta
+        useHead({
+          title: state.title,
+          meta: [
+            { property: "og:title", content: state.title },
+            { property: "og:description", content: state.content.substring(0, 150) },
+            { property: "og:image", content: state.imageUrl },
+          ],
+        });
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      }
+    };
+
+    const fetchMostReadNews = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await axios.get(
+          `${process.env.VUE_APP_BACKENDURL}/news/top`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        state.mostReadNews = response.data.map((news) => ({
+          ...news,
+          image: `${process.env.VUE_APP_IMAGEROUTE}${news.image}`,
+        }));
+      } catch (error) {
+        console.error("Error fetching most read news:", error);
+      }
+    };
+
+    const formatDate = (isoDate) => {
+      return moment(isoDate).format("MM/DD/YYYY");
+    };
+
+    onMounted(() => {
+      state.newsId = route.params.id;
+      fetchNews(state.newsId);
+      fetchMostReadNews();
+    });
+
+    return {
+      state,
+      formatDate,
+    };
   },
 };
 </script>
