@@ -82,6 +82,20 @@ export default {
       mostReadNews: [],
     });
 
+    const getImageMetadata = async (imageUrl) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          resolve({
+            width: img.width,
+            height: img.height,
+            type: `image/${imageUrl.split(".").pop()}`,
+          });
+        };
+        img.src = imageUrl;
+      });
+    };
+
     const fetchNews = async (newsId) => {
       try {
         const token = localStorage.getItem("authToken");
@@ -94,6 +108,7 @@ export default {
             },
           }
         );
+
         state.title = response.data.title;
         state.category = response.data.category;
         state.imageUrl = `${process.env.VUE_APP_IMAGEROUTE}${response.data.image}`;
@@ -101,13 +116,24 @@ export default {
         state.content = response.data.content;
         state.newsId = newsId;
 
+        // Obtener metadatos de la imagen
+        const imageMetadata = await getImageMetadata(state.imageUrl);
+
         // Actualizar las etiquetas meta
         useHead({
           title: state.title,
           meta: [
+            { property: "og:locale", content: "es_ES" },
+            { property: "og:url", content: window.location.href },
+            { property: "og:site_name", content:"Sde Today"},
             { property: "og:title", content: state.title },
             { property: "og:description", content: state.content.substring(0, 150) },
             { property: "og:image", content: state.imageUrl },
+            { property: "og:image:width", content: imageMetadata.width.toString() },
+            { property: "og:image:height", content: imageMetadata.height.toString() },
+            { property: "og:image:type", content: imageMetadata.type },
+            
+          
           ],
         });
       } catch (error) {
