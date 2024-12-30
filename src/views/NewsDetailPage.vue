@@ -123,17 +123,16 @@ export default {
         useHead({
           title: state.title,
           meta: [
-            { property: "og:locale", content: "es_ES" },
-            { property: "og:url", content: window.location.href },
-            { property: "og:site_name", content:"Sde Today"},
-            { property: "og:title", content: state.title },
-            { property: "og:description", content: state.content.substring(0, 150) },
             { property: "og:image", content: state.imageUrl },
             { property: "og:image:width", content: imageMetadata.width.toString() },
             { property: "og:image:height", content: imageMetadata.height.toString() },
             { property: "og:image:type", content: imageMetadata.type },
-            
-          
+            { property: "og:image:secure_url", content:state.imageUrl },
+            { property: "og:locale", content: "es_ES" },
+            { property: "og:url", content: window.location.href },
+            { property: "og:site_name", content:"Sde Today"},
+            { property: "og:title", content: state.title },
+            { property: "og:description", content: state.title },
           ],
         });
       } catch (error) {
