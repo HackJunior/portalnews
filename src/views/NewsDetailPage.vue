@@ -111,6 +111,7 @@ export default {
             },
           }
         );
+        console.log(response);
 
         state.title = response.data.title;
         state.category = response.data.category;
@@ -178,6 +179,7 @@ export default {
 
     onMounted(() => {
       state.newsId = route.params.id;
+      console.log(state.newsId);
       fetchNews(state.newsId);
       fetchMostReadNews();
 
