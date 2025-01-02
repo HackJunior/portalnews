@@ -113,16 +113,16 @@ export default {
         );
         console.log(response);
 
-        state.title = response.data.title;
-        state.category = response.data.category;
-        state.imageUrl = `${process.env.VUE_APP_IMAGEROUTE}${response.data.image}`;
-        state.createdAt = response.data.createdAt;
-        state.content = response.data.content;
+        state.title = response.data[0].title;
+        state.category = response.data[0].category;
+        state.imageUrl = `${process.env.VUE_APP_IMAGEROUTE}${response.data[0].image}`;
+        state.createdAt = response.data[0].createdAt;
+        state.content = response.data[0].content;
         state.newsId = newsId;
 
         
         await axios.put(
-          `${process.env.VUE_APP_BACKENDURL}/news/${response.data._id}`,
+          `${process.env.VUE_APP_BACKENDURL}/news/${response.data[0]._id}`,
         );
 
         const imageMetadata = await getImageMetadata(state.imageUrl);
