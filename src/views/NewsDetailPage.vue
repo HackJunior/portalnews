@@ -39,9 +39,10 @@
           <h2 class="most-read-title">Más Leídas</h2>
           <div class="most-read-line"></div>
           <div
-            class="most-read-item"
+            class="most-read-item selectable"
             v-for="(news, index) in state.mostReadNews"
             :key="index"
+            @click="goToDetail(news._id)"
           >
             <div class="most-read-content">
               <img :src="news.image" alt="Noticia" class="most-read-image" />
@@ -56,6 +57,7 @@
       </div>
     </div>
   </div>
+  <Footer />
 </template>
 
 <script>
@@ -65,6 +67,7 @@ import moment from "moment";
 import { reactive, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useHead } from "@vueuse/head";
+import Footer from "@/components/Home/footerHome.vue";
 
 export default {
   components: { HeaderHome },
@@ -79,7 +82,8 @@ export default {
       title: "",
       category: "",
       imageUrl: "",
-      mostReadNews: [],
+      mostReadNews: [
+      ],
     });
 
     const getImageMetadata = async (imageUrl) => {
@@ -164,6 +168,11 @@ export default {
       return moment(isoDate).format("MM/DD/YYYY");
     };
 
+    const goToDetail = (IdNews) => {
+      const route = `/news/${IdNews}`;
+      window.location.href = route;
+    };
+
     onMounted(() => {
       state.newsId = route.params.id;
       fetchNews(state.newsId);
@@ -173,6 +182,7 @@ export default {
     return {
       state,
       formatDate,
+      goToDetail,
     };
   },
 };
@@ -299,7 +309,7 @@ export default {
 
 .sticky-container {
   position: sticky;
-  top: 20px;
+  top: 20px; /* Permite que el contenedor permanezca visible al hacer scroll */
   background: white;
   padding: 10px;
   border: 1px solid #ddd;
@@ -308,20 +318,20 @@ export default {
 
 .most-read-title {
   font-size: 1.5rem;
-  color: #3daaa0;
+  color: #3daaa0; /* Verde */
   font-weight: bold;
 }
 
 .most-read-line {
   width: 100%;
   height: 3px;
-  background-color: #3daaa0;
+  background-color: #3daaa0; /* Línea verde */
   margin: 10px 0;
 }
 
 .most-read-item {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Apilamos contenido */
   gap: 5px;
   padding: 10px 0;
 }
@@ -342,20 +352,44 @@ export default {
 .most-read-title-text {
   font-size: 1rem;
   font-weight: normal;
-  color: #002855;
+  color: #002855; /* Azul oscuro */
   flex: 1;
-  transition: color 0.3s;
+  transition: color 0.3s; /* Efecto suave al cambiar color */
 }
 
 .most-read-title-text:hover {
-  color: #f2665e;
+  color: #f2665e; /* Rojizo al hacer hover */
 }
 
 .most-read-divider {
   width: 100%;
   height: 1px;
-  background-color: #ddd;
+  background-color: #ddd; /* Línea divisoria */
   margin-top: 10px;
+}
+
+/* Estilo base del contenedor */
+.selectable {
+  cursor: pointer; /* Cambia el cursor a "pointer" para indicar interactividad */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transiciones suaves */
+}
+
+/* Efecto de hover */
+.selectable:hover {
+  transform: scale(1.02); /* Agranda ligeramente el elemento */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Añade una sombra */
+}
+
+/* Cambia el color del texto al hacer hover */
+.selectable:hover .most-read-title-text {
+  color: #f2665e; /* Cambia a un color rojizo */
+  text-decoration: underline; /* Añade subrayado */
+}
+
+/* Cambia la opacidad de la imagen al hacer hover */
+.selectable:hover .most-read-image {
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
 }
 
 @media (max-width: 768px) {

@@ -242,8 +242,9 @@ export default {
 
 .side-image {
   width: 100%;
-  height: auto;
+  height: 250px; /* Fixed height for consistency */
   border-radius: 5px;
+  object-fit: cover; /* Ensure the image covers the area */
 }
 
 .side-title {

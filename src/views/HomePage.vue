@@ -112,7 +112,7 @@ import axios from "axios";
 
 
 export default {
-  components: { HeaderHome, NewsWithTitle, Footer, CategoryHome },
+  components: { HeaderHome, NewsWithTitle, CategoryHome },
   data() {
     return {
       PortadaId: "",
@@ -245,10 +245,25 @@ export default {
 .news-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 225px);
+  grid-template-rows: repeat(2, 1fr); /* Adjust rows to be flexible */
   gap: 20px;
-  max-width: 1200px;
+  max-width: 1500px; /* Match the max-width of portada-container */
   margin: 20px auto;
+}
+
+.news-grid .news-with-title {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* Maintain 16:9 aspect ratio */
+}
+
+.news-grid .news-with-title img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the area */
 }
 
 footer {
@@ -256,7 +271,7 @@ footer {
 }
 
 .truly-kurious-section {
-  max-width: 1200px;
+  max-width: 1500px;
   margin: 20px auto;
   display: flex;
   justify-content: center;
