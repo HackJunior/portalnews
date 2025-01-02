@@ -194,7 +194,8 @@ export default {
 
 .main-image {
   width: 100%;
-  height: auto;
+  object-fit: cover; /* Ensure the image covers the area */
+  height: 450px;
   border-radius: 5px;
 }
 
