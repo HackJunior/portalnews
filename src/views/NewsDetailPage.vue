@@ -70,7 +70,7 @@ import { useHead } from "@vueuse/head";
 import Footer from "@/components/Home/footerHome.vue";
 
 export default {
-  components: { HeaderHome },
+  components: { HeaderHome,Footer },
 
   setup() {
     const route = useRoute();

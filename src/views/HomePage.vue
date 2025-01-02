@@ -112,7 +112,7 @@ import axios from "axios";
 
 
 export default {
-  components: { HeaderHome, NewsWithTitle, CategoryHome },
+  components: { HeaderHome, NewsWithTitle, CategoryHome ,Footer},
   data() {
     return {
       PortadaId: "",
