@@ -19,7 +19,7 @@
           />
           <p
             class="news-title"
-            @click="goToDetail(news._id)"
+            @click="goToDetail(news.urlIdTitle)"
           >
             {{ news.title }}
           </p>
@@ -36,7 +36,7 @@
             v-for="(news, index) in mostReadNews"
             :key="index"
           >
-            <div class="most-read-content selectable" @click="goToDetail(news._id)">
+            <div class="most-read-content selectable" @click="goToDetail(news.urlIdTitle)">
               <img :src="news.image" alt="Noticia" class="most-read-image" />
               <p class="most-read-title-text">{{ news.title }}</p>
             </div>

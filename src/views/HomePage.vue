@@ -9,7 +9,7 @@
         :link="'https://example.com'" 
         height="560px"
         fontSize="3rem"
-        :id="PortadaId"
+        :id="urlIdTitle"
       />
     </div>  
 
@@ -55,7 +55,7 @@
       :title="news.title"
       height="225px"
       fontSize="1.2rem"
-      :id="news._id"
+      :id="news.urlIdTitle"
     />
   </section>
 
@@ -111,8 +111,9 @@ import CategoryHome from "@/components/Home/CategoryHome.vue";
 import axios from "axios";
 
 
+
 export default {
-  components: { HeaderHome, NewsWithTitle, CategoryHome ,Footer},
+  components: { HeaderHome, NewsWithTitle, Footer, CategoryHome },
   data() {
     return {
       PortadaId: "",
@@ -121,9 +122,9 @@ export default {
       headline: "",
       TrulyImage,
       TrulyKuriousImage,
+      urlIdTitle:"",
       videoUrl: "https://www.youtube.com/embed/kNt-81PAE94",
-      gridNews: [
-      ],
+      gridNews: [],
       videos: [
         require("@/assets/videos/video1.mp4"),
         require("@/assets/videos/video2.mp4"),
@@ -146,6 +147,7 @@ export default {
       this.mainImage = process.env.VUE_APP_IMAGEROUTE + response.data[0].image;
       this.category = response.data[0].category;
       this.headline = response.data[0].title;
+      this.urlIdTitle = response.data[0].urlIdTitle;
     },
     async getPortadaBottom() {
       const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news`, {
@@ -157,7 +159,6 @@ export default {
         ...news,
         image: `${process.env.VUE_APP_IMAGEROUTE}${news.image}`,
       }));
-      console.log(this.gridNews);
     },
     prevVideo() {
       this.currentVideo =

@@ -42,7 +42,7 @@
             class="most-read-item selectable"
             v-for="(news, index) in state.mostReadNews"
             :key="index"
-            @click="goToDetail(news._id)"
+            @click="goToDetail(news.urlIdTitle)"
           >
             <div class="most-read-content">
               <img :src="news.image" alt="Noticia" class="most-read-image" />
@@ -82,8 +82,7 @@ export default {
       title: "",
       category: "",
       imageUrl: "",
-      mostReadNews: [
-      ],
+      mostReadNews: [],
     });
 
     const getImageMetadata = async (imageUrl) => {
@@ -105,7 +104,7 @@ export default {
         const token = localStorage.getItem("authToken");
         const response = await axios.get(
           `${process.env.VUE_APP_BACKENDURL}/news`,
-          { params: { id: newsId } },
+          { params: { urlIdTitle: newsId } },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -120,7 +119,11 @@ export default {
         state.content = response.data.content;
         state.newsId = newsId;
 
-        // Obtener metadatos de la imagen
+        
+        await axios.put(
+          `${process.env.VUE_APP_BACKENDURL}/news/${response.data._id}`,
+        );
+
         const imageMetadata = await getImageMetadata(state.imageUrl);
 
         // Actualizar las etiquetas meta
@@ -177,6 +180,30 @@ export default {
       state.newsId = route.params.id;
       fetchNews(state.newsId);
       fetchMostReadNews();
+
+      const sidebar = document.querySelector('.sidebar-news');
+      const footer = document.querySelector('footer');
+      const horizontalLine = document.querySelector('.horizontal-line');
+      const onScroll = () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const footerTop = footer.getBoundingClientRect().top + window.pageYOffset;
+        const sidebarHeight = sidebar.offsetHeight;
+        const maxScroll = footerTop - sidebarHeight - 20; // 20px for margin
+        const startScroll = horizontalLine.getBoundingClientRect().bottom + window.pageYOffset;
+
+        if (scrollTop < startScroll) {
+          sidebar.style.transform = `translateY(${startScroll}px)`;
+        } else if (scrollTop < maxScroll) {
+          sidebar.style.transform = `translateY(${scrollTop}px)`;
+        } else {
+          sidebar.style.transform = `translateY(${maxScroll}px)`;
+        }
+      };
+      window.addEventListener('scroll', onScroll);
+
+      return () => {
+        window.removeEventListener('scroll', onScroll);
+      };
     });
 
     return {
@@ -305,11 +332,13 @@ export default {
 /* Noticias más leídas */
 .sidebar-news {
   flex: 1;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  transition: transform 0.3s linear;
 }
 
 .sticky-container {
-  position: sticky;
-  top: 20px; /* Permite que el contenedor permanezca visible al hacer scroll */
   background: white;
   padding: 10px;
   border: 1px solid #ddd;
@@ -439,6 +468,7 @@ export default {
   }
 
   .sidebar-news {
+    position: static;
     margin-top: 20px; /* Add margin to separate from main-news */
     padding: 10px; /* Add padding for mobile view */
     width: 100%;
