@@ -122,7 +122,7 @@ export default {
 
         
         await axios.put(
-          `${process.env.VUE_APP_BACKENDURL}/news/${response.data[0]._id}`,
+          `${process.env.VUE_APP_BACKENDURL}/news/${response.data[0]._id}/read`,
         );
 
         const imageMetadata = await getImageMetadata(state.imageUrl);
