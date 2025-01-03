@@ -188,17 +188,17 @@ export default {
       const horizontalLine = document.querySelector('.horizontal-line');
       const onScroll = () => {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const footerTop = footer.getBoundingClientRect().top + window.pageYOffset;
+        const footerTop = footer.getBoundingClientRect().top + window.pageYOffset - 150;
         const sidebarHeight = sidebar.offsetHeight;
         const maxScroll = footerTop - sidebarHeight - 20; // 20px for margin
         const startScroll = horizontalLine.getBoundingClientRect().bottom + window.pageYOffset;
 
         if (scrollTop < startScroll) {
-          sidebar.style.transform = `translateY(${startScroll}px)`;
+          sidebar.style.transform = `translateY(${startScroll - horizontalLine.getBoundingClientRect().bottom}px)`;
         } else if (scrollTop < maxScroll) {
-          sidebar.style.transform = `translateY(${scrollTop}px)`;
+          sidebar.style.transform = `translateY(${scrollTop - horizontalLine.getBoundingClientRect().bottom}px)`;
         } else {
-          sidebar.style.transform = `translateY(${maxScroll}px)`;
+          sidebar.style.transform = `translateY(${maxScroll - horizontalLine.getBoundingClientRect().bottom}px)`;
         }
       };
       window.addEventListener('scroll', onScroll);
@@ -334,13 +334,11 @@ export default {
 /* Noticias más leídas */
 .sidebar-news {
   flex: 1;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  transition: transform 0.3s linear;
 }
 
 .sticky-container {
+  position: sticky;
+  top: 20px; /* Permite que el contenedor permanezca visible al hacer scroll */
   background: white;
   padding: 10px;
   border: 1px solid #ddd;
@@ -386,6 +384,8 @@ export default {
   color: #002855; /* Azul oscuro */
   flex: 1;
   transition: color 0.3s; /* Efecto suave al cambiar color */
+  white-space: normal; /* Allow text to wrap */
+  overflow-wrap: break-word; /* Break long words */
 }
 
 .most-read-title-text:hover {

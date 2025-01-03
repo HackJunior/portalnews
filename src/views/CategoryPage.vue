@@ -15,7 +15,7 @@
           <NewsCard
             :imageUrl="news.image"
             :category="news.category"
-            :newsId="news._id"
+            :newsId="news.urlIdTitle"
           />
           <p
             class="news-title"
