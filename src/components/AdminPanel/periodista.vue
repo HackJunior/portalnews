@@ -205,6 +205,7 @@ export default {
           }
         });
         this.journalists = response.data;
+        this.journalists.image  = `${process.env.VUE_APP_IMAGEROUTE}${this.journalist.image}`;
       } catch (error) {
         console.error("Error al obtener los periodistas:", error.response || error.message);
       }

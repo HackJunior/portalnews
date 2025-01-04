@@ -39,7 +39,7 @@
         </div>
             <!-- Últimas noticias -->
     <div class="latest-news-container">
-      <div class="latest-news" v-for="(news, index) in state.latestNews" :key="index">
+      <div class="latest-news" v-for="(news, index) in state.latestNews" :key="index" @click="goToDetail(news.urlIdTitle)">
         <img :src="news.image" alt="Noticia" class="latest-news-image" />
         <p class="latest-news-title">{{ news.title }}</p>
       </div>
