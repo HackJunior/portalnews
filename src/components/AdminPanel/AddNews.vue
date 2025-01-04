@@ -25,6 +25,23 @@
         <span v-if="errors.category" class="error-message">Este campo es obligatorio</span>
       </div>
 
+      <div v-if="newsForm.category === 'Opinión'" class="form-group" :class="{ 'error': errors.imagePerfil }">
+        <label for="imagePerfil">Imagen de Perfil</label>
+        <input type="file" id="imagePerfil" @change="onProfileImageChange" accept="image/*" class="centered-input" />
+        <span v-if="errors.imagePerfil" class="error-message">Este campo es obligatorio</span>
+      </div>
+
+      <div class="form-group" :class="{ 'error': errors.reporter }">
+        <label for="reporter">Periodista</label>
+        <select id="reporter" v-model="newsForm.reporterId" class="centered-input">
+          <option value="" disabled>Seleccione un periodista</option>
+          <option v-for="reporter in reporters" :key="reporter._id" :value="reporter._id">
+            {{ reporter.name }}
+          </option>
+        </select>
+        <span v-if="errors.reporter" class="error-message">Este campo es obligatorio</span>
+      </div>
+
       <div class="form-group" :class="{ 'error': errors.tags }">
         <label for="tags">Tags</label>
         <multiselect
@@ -75,7 +92,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 import axios from "axios";
@@ -91,7 +108,9 @@ export default {
       category: "",
       tags: [],
       image: null,
+      imagePerfil: null,
       content: "",
+      reporterId: ""
     });
 
     const errors = ref({
@@ -99,22 +118,31 @@ export default {
       category: false,
       tags: false,
       image: false,
+      imagePerfil: false,
       content: false,
+      reporter: false
     });
 
     const showConfirmation = ref(false);
     const showError = ref(false);
 
-    const categories = ref(["Política", "Economía", "Deportes","Actualidad","Nacionales","Internacionales","Entretenimiento","Viral","Local"]);
+    const categories = ref(["Política", "Economía", "Deportes","Actualidad","Nacionales","Internacionales","Entretenimiento","Viral","Local", "Opinión"]);
     const tagsOptions = ref([
       { name: "Portada" },
       { name: "Portada Bottom"},
       { name: "Importante" }
     ]);
 
+    const reporters = ref([]);
+
     const onFileChange = (event) => {
       const file = event.target.files[0];
       newsForm.value.image = file;
+    };
+
+    const onProfileImageChange = (event) => {
+      const file = event.target.files[0];
+      newsForm.value.imagePerfil = file;
     };
 
     const validateForm = () => {
@@ -127,6 +155,11 @@ export default {
       errors.value.tags = newsForm.value.tags.length === 0;
       errors.value.image = !newsForm.value.image;
       errors.value.content = !newsForm.value.content;
+      errors.value.reporter = !newsForm.value.reporterId;
+
+      if (newsForm.value.category === "Opinión") {
+        errors.value.imagePerfil = !newsForm.value.imagePerfil;
+      }
 
       // Verificar si algún campo tiene error
       for (let key in errors.value) {
@@ -161,12 +194,29 @@ export default {
 
         console.log("URL de la imagen obtenida:", imageUrl);
 
+        let imagePerfilUrl = null;
+        if (newsForm.value.category === "Opinión") {
+          const formDataPerfil = new FormData();
+          formDataPerfil.append("image", newsForm.value.imagePerfil);
+
+          const imagePerfilResponse = await axios.post(`${process.env.VUE_APP_BACKENDURL}/subirimagen`, formDataPerfil, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`
+            },
+          });
+
+          imagePerfilUrl = imagePerfilResponse.data.filename;
+        }
+
         const newsData = {
           title: newsForm.value.title,
           category: newsForm.value.category,
           content: newsForm.value.content,
           image: imageUrl,
           tags: newsForm.value.tags.map(item => item.name),
+          imagePerfil: imagePerfilUrl,
+          reporterId: newsForm.value.reporterId
         };
 
         console.log("Enviando datos de la noticia:", newsData);
@@ -193,7 +243,9 @@ export default {
         category: "",
         tags: [],
         image: null,
+        imagePerfil: null,
         content: "",
+        reporterId: ""
       };
 
       errors.value = {
@@ -201,7 +253,9 @@ export default {
         category: false,
         tags: false,
         image: false,
+        imagePerfil: false,
         content: false,
+        reporter: false
       };
 
       // Ocultar el mensaje después de unos segundos
@@ -214,11 +268,31 @@ export default {
       showConfirmation.value = false;
     };
 
+    const getReporters = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/reporters`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        reporters.value = response.data;
+      } catch (error) {
+        console.error("Error al obtener los periodistas:", error.response || error.message);
+      }
+    };
+
+    onMounted(() => {
+      getReporters();
+    });
+
     return {
       newsForm,
       categories,
       tagsOptions,
+      reporters,
       onFileChange,
+      onProfileImageChange,
       submitForm,
       showConfirmation,
       showError,

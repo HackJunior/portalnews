@@ -9,30 +9,54 @@
         <h3>Crear Usuario</h3>
         <div class="form-group">
           <label for="username">Nombre de Usuario</label>
-          <input type="text" id="username" v-model="userForm.username" class="styled-input" />
+          <input
+            type="text"
+            id="username"
+            v-model="userForm.username"
+            class="styled-input"
+          />
         </div>
         <div class="form-group">
           <label for="password">Contraseña</label>
-          <input type="password" id="password" v-model="userForm.password" class="styled-input" />
+          <input
+            type="password"
+            id="password"
+            v-model="userForm.password"
+            class="styled-input"
+          />
         </div>
         <div class="form-group">
           <label for="confirmPassword">Confirmar Contraseña</label>
-          <input type="password" id="confirmPassword" v-model="userForm.confirmPassword" class="styled-input" />
+          <input
+            type="password"
+            id="confirmPassword"
+            v-model="userForm.confirmPassword"
+            class="styled-input"
+          />
         </div>
         <div class="form-group">
           <label for="email">Correo</label>
-          <input type="email" id="b" v-model="userForm.correo" class="styled-input" />
+          <input
+            type="email"
+            id="email"
+            v-model="userForm.correo"
+            class="styled-input"
+          />
         </div>
         <div class="form-group">
           <label for="role">Rol</label>
           <select id="role" v-model="userForm.rol" class="styled-input">
             <option value="" disabled>Seleccione un rol</option>
-            <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
+            <option v-for="role in roles" :key="role" :value="role">
+              {{ role }}
+            </option>
           </select>
         </div>
         <button @click="createUser" class="save-btn">Guardar</button>
         <button @click="closeCreateModal" class="cancel-btn">Cancelar</button>
-        <p v-if="passwordError" class="error-message">Las contraseñas no coinciden.</p>
+        <p v-if="passwordError" class="error-message">
+          Las contraseñas no coinciden.
+        </p>
       </div>
     </div>
 
@@ -42,21 +66,38 @@
         <h3>Editar Usuario</h3>
         <div class="form-group">
           <label for="editUsername">Nombre de Usuario</label>
-          <input type="text" id="editUsername" v-model="editForm.username" class="styled-input" />
+          <input
+            type="text"
+            id="editUsername"
+            v-model="editForm.username"
+            class="styled-input"
+          />
         </div>
         <div class="form-group">
           <label for="editPassword">Contraseña</label>
-          <input type="password" id="editPassword" v-model="editForm.password" class="styled-input" />
+          <input
+            type="password"
+            id="editPassword"
+            v-model="editForm.password"
+            class="styled-input"
+          />
         </div>
         <div class="form-group">
           <label for="editEmail">Correo</label>
-          <input type="email" id="editEmail" v-model="editForm.correo" class="styled-input" />
+          <input
+            type="email"
+            id="editEmail"
+            v-model="editForm.correo"
+            class="styled-input"
+          />
         </div>
         <div class="form-group">
           <label for="editRole">Rol</label>
           <select id="editRole" v-model="editForm.rol" class="styled-input">
             <option value="" disabled>Seleccione un rol</option>
-            <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
+            <option v-for="role in roles" :key="role" :value="role">
+              {{ role }}
+            </option>
           </select>
         </div>
         <button @click="saveEdit" class="save-btn">Guardar</button>
@@ -81,7 +122,9 @@
         <p class="user-info"><strong>Correo:</strong> {{ user.correo }}</p>
         <div class="user-actions">
           <button @click="openEditModal(user)" class="edit-btn">Editar</button>
-          <button @click="confirmDelete(user._id)" class="delete-btn">Eliminar</button>
+          <button @click="confirmDelete(user._id)" class="delete-btn">
+            Eliminar
+          </button>
         </div>
       </div>
     </div>
@@ -94,7 +137,7 @@ export default {
   data() {
     return {
       users: [],
-      roles: ["admin", "user","editor"],
+      roles: ["admin", "user", "editor"],
       showCreateModal: false,
       showEditModal: false,
       showDeleteModal: false,
@@ -105,14 +148,14 @@ export default {
         password: "",
         confirmPassword: "",
         correo: "",
-        rol: ""
+        rol: "",
       },
       editForm: {
         username: "",
         password: "",
         correo: "",
-        rol: ""
-      }
+        rol: "",
+      },
     };
   },
   methods: {
@@ -125,19 +168,23 @@ export default {
       this.passwordError = false;
     },
     async createUser() {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem("authToken");
       if (this.userForm.password !== this.userForm.confirmPassword) {
         this.passwordError = true;
         return;
-      } 
+      }
       this.passwordError = false;
       //const { confirmPassword, ...dataToSend } = this.userForm;
       delete this.userForm.confirmPassword;
-      await axios.post(`${process.env.VUE_APP_BACKENDURL}/users`,this.userForm,{
+      await axios.post(
+        `${process.env.VUE_APP_BACKENDURL}/users`,
+        this.userForm,
+        {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
-      });
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       await this.getUsers();
       this.closeCreateModal();
     },
@@ -149,17 +196,23 @@ export default {
       this.showEditModal = false;
     },
     async saveEdit() {
-      const token = localStorage.getItem('authToken');
-      const index = this.users.findIndex(user => user._id === this.editForm.id);
+      const token = localStorage.getItem("authToken");
+      const index = this.users.findIndex(
+        (user) => user._id === this.editForm.id
+      );
 
       if (index !== -1) {
         this.users.splice(index, 1, { ...this.editForm });
       }
-      await axios.put(`${process.env.VUE_APP_BACKENDURL}/users/${this.editForm._id}`,this.editForm,{
+      await axios.put(
+        `${process.env.VUE_APP_BACKENDURL}/users/${this.editForm._id}`,
+        this.editForm,
+        {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       this.closeEditModal();
     },
     confirmDelete(id) {
@@ -167,16 +220,18 @@ export default {
       this.showDeleteModal = true;
     },
     async deleteUser() {
-      const token = localStorage.getItem('authToken');
-      await axios.delete(`${process.env.VUE_APP_BACKENDURL}/users/${this.deleteId}`,{
+      const token = localStorage.getItem("authToken");
+      await axios.delete(
+        `${process.env.VUE_APP_BACKENDURL}/users/${this.deleteId}`,
+        {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-      this.users = this.users.filter(user => user._id !== this.deleteId);
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      this.users = this.users.filter((user) => user._id !== this.deleteId);
       this.showDeleteModal = false;
       this.deleteId = null;
-      
     },
     cancelDelete() {
       this.showDeleteModal = false;
@@ -188,29 +243,35 @@ export default {
         password: "",
         confirmPassword: "",
         correo: "",
-        rol: ""
+        rol: "",
       };
     },
     async getUsers() {
       try {
-        const token = localStorage.getItem('authToken');
-        const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/users`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const token = localStorage.getItem("authToken");
+        const response = await axios.get(
+          `${process.env.VUE_APP_BACKENDURL}/users`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-    // Asigna los datos de la respuesta a `newsData`
+        // Asigna los datos de la respuesta a `newsData`
         this.users = response.data.users;
         console.log(this.users);
       } catch (error) {
-      console.error("Error al obtener las noticias:", error.response || error.message);
-  }
+        console.error(
+          "Error al obtener las noticias:",
+          error.response || error.message
+        );
+      }
     },
   },
-    mounted(){
+  mounted() {
     this.getUsers();
-  }
+  },
 };
 </script>
 

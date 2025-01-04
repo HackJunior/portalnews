@@ -23,14 +23,27 @@
       <div class="main-news">
         <h1 class="news-title">{{ state.title }}</h1>
         <div class="news-detail-content">
+          <div class="info-header">
+            <div class="reporter-info" v-if="state.reporter">
+              <img :src="state.reporter.image" alt="Reportero" class="reporter-image" />
+              <p class="reporter-name">{{ state.reporter.name }}</p>
+            </div>
+            <p class="news-date">{{ formatDate(state.createdAt) }}</p>
+          </div>
           <div class="image-wrapper">
             <img :src="state.imageUrl" alt="Noticia" class="news-image" />
-            <p class="news-date">{{ formatDate(state.createdAt) }}</p>
           </div>
           <div class="news-body">
             <p class="content-paragraph">{{ state.content }}</p>
           </div>
         </div>
+            <!-- Últimas noticias -->
+    <div class="latest-news-container">
+      <div class="latest-news" v-for="(news, index) in state.latestNews" :key="index">
+        <img :src="news.image" alt="Noticia" class="latest-news-image" />
+        <p class="latest-news-title">{{ news.title }}</p>
+      </div>
+    </div>
       </div>
 
       <!-- Noticias más leídas -->
@@ -54,8 +67,11 @@
             ></div>
           </div>
         </div>
+        
       </div>
     </div>
+
+
   </div>
   <Footer />
 </template>
@@ -64,13 +80,14 @@
 import HeaderHome from "@/components/Home/HeaderHome.vue";
 import axios from "axios";
 import moment from "moment";
+import "moment/locale/es"; // Import Spanish locale for moment.js
 import { reactive, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useHead } from "@vueuse/head";
 import Footer from "@/components/Home/footerHome.vue";
 
 export default {
-  components: { HeaderHome,Footer },
+  components: { HeaderHome, Footer },
 
   setup() {
     const route = useRoute();
@@ -78,11 +95,13 @@ export default {
     const state = reactive({
       newsId: "",
       content: "",
-      createdAt: null,
+      createdAt: "",
       title: "",
       category: "",
       imageUrl: "",
       mostReadNews: [],
+      latestNews: [],
+      reporter: {},
     });
 
     const getImageMetadata = async (imageUrl) => {
@@ -97,6 +116,23 @@ export default {
         };
         img.src = imageUrl;
       });
+    };
+
+    const fetchReporter = async (reporterId) => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/reporters/${reporterId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        state.reporter = {
+          name: response.data.name,
+          image: `${process.env.VUE_APP_IMAGEROUTE}${response.data.image}`,
+        };
+      } catch (error) {
+        console.error("Error fetching reporter:", error);
+      }
     };
 
     const fetchNews = async (newsId) => {
@@ -120,9 +156,12 @@ export default {
         state.content = response.data[0].content;
         state.newsId = newsId;
 
-        
+        if (response.data[0].reporter) {
+          await fetchReporter(response.data[0].reporter);
+        }
+
         await axios.put(
-          `${process.env.VUE_APP_BACKENDURL}/news/${response.data[0]._id}/read`,
+          `${process.env.VUE_APP_BACKENDURL}/news/${response.data[0]._id}/read`
         );
 
         const imageMetadata = await getImageMetadata(state.imageUrl);
@@ -135,10 +174,10 @@ export default {
             { property: "og:image:width", content: imageMetadata.width.toString() },
             { property: "og:image:height", content: imageMetadata.height.toString() },
             { property: "og:image:type", content: imageMetadata.type },
-            { property: "og:image:secure_url", content:state.imageUrl },
+            { property: "og:image:secure_url", content: state.imageUrl },
             { property: "og:locale", content: "es_ES" },
             { property: "og:url", content: window.location.href },
-            { property: "og:site_name", content:"Sde Today"},
+            { property: "og:site_name", content: "Sde Today" },
             { property: "og:title", content: state.title },
             { property: "og:description", content: state.title },
           ],
@@ -168,8 +207,20 @@ export default {
       }
     };
 
+    const fetchLatestNews = async () => {
+      try {
+        const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news/recent`);
+        state.latestNews = response.data.map((news) => ({
+          ...news,
+          image: `${process.env.VUE_APP_IMAGEROUTE}${news.image}`,
+        }));
+      } catch (error) {
+        console.error("Error fetching latest news:", error);
+      }
+    };
+
     const formatDate = (isoDate) => {
-      return moment(isoDate).format("MM/DD/YYYY");
+      return moment(isoDate).locale("es").format("MMMM D, YYYY | hh:mm A").toUpperCase();
     };
 
     const goToDetail = (IdNews) => {
@@ -182,15 +233,16 @@ export default {
       console.log(state.newsId);
       fetchNews(state.newsId);
       fetchMostReadNews();
+      fetchLatestNews();
 
-      const sidebar = document.querySelector('.sidebar-news');
-      const footer = document.querySelector('footer');
-      const horizontalLine = document.querySelector('.horizontal-line');
+      const sidebar = document.querySelector(".sidebar-news");
+      const latestNewsContainer = document.querySelector(".latest-news-container");
+      const horizontalLine = document.querySelector(".horizontal-line");
       const onScroll = () => {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const footerTop = footer.getBoundingClientRect().top + window.pageYOffset - 150;
+        const latestNewsTop = latestNewsContainer.getBoundingClientRect().top + window.pageYOffset - 150;
         const sidebarHeight = sidebar.offsetHeight;
-        const maxScroll = footerTop - sidebarHeight - 20; // 20px for margin
+        const maxScroll = latestNewsTop - sidebarHeight - 20; // 20px for margin
         const startScroll = horizontalLine.getBoundingClientRect().bottom + window.pageYOffset;
 
         if (scrollTop < startScroll) {
@@ -201,10 +253,10 @@ export default {
           sidebar.style.transform = `translateY(${maxScroll - horizontalLine.getBoundingClientRect().bottom}px)`;
         }
       };
-      window.addEventListener('scroll', onScroll);
+      window.addEventListener("scroll", onScroll);
 
       return () => {
-        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener("scroll", onScroll);
       };
     });
 
@@ -289,6 +341,31 @@ export default {
   gap: 20px;
 }
 
+.info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reporter-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reporter-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.reporter-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #002855;
+}
+
 .image-wrapper {
   position: relative;
 }
@@ -301,14 +378,9 @@ export default {
 }
 
 .news-date {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
-  color: #fff;
   font-size: 0.9rem;
-  padding: 5px 10px;
-  border-radius: 5px;
+  color: #666;
+  text-align: right;
 }
 
 /* Contenido del cuerpo */
@@ -319,7 +391,7 @@ export default {
 }
 
 .content-paragraph {
- white-space: pre-line;
+  white-space: pre-line;
 }
 
 .content-paragraph::first-letter {
@@ -423,6 +495,44 @@ export default {
   transition: opacity 0.2s ease;
 }
 
+/* Últimas noticias */
+.latest-news-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.latest-news {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.latest-news-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.latest-news-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #002855;
+  text-align: justify;
+  white-space: normal; /* Allow text to wrap */
+  overflow-wrap: break-word; /* Break long words */
+}
+
 @media (max-width: 768px) {
   .news-container {
     flex-direction: column;
@@ -464,7 +574,7 @@ export default {
     right: 10px;
   }
 
-  .news-body {  
+  .news-body {
     text-align: justify; /* Justify the body content */
     padding: 20px; /* Add padding to the news body */
   }
@@ -479,6 +589,17 @@ export default {
 
   .breadcrumb {
     justify-content: center; /* Center the breadcrumb */
+  }
+
+  .latest-news-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .latest-news {
+    width: 100%;
+    max-width: 480px;
   }
 }
 </style>
