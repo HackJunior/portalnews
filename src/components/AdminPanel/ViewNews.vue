@@ -145,12 +145,8 @@ export default {
     const categories = ["Política", "Economía", "Deportes", "Actualidad", "Nacionales", "Internacionales", "Entretenimiento", "Viral", "Local"];
     const tagsOptions = [
       { name: "Portada" },
-      { name: "Nacional" },
-      { name: "Internacional" },
-      { name: "Destacado" },
-      { name: "Última Hora" },
-      { name: "Opinión" },
-      { name: "Exclusivo" }
+      { name: "Portada Bottom"},
+      { name: "Importante" }
     ];
     
     return {
