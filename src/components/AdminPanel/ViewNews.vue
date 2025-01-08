@@ -237,6 +237,7 @@ export default {
             },
           });
           imageUrl = imageResponse.data.filename;
+          this.editForm.image = imageUrl; // Update the image value with the new filename
         } catch (error) {
           console.error("Error al subir la imagen:", error);
           return;
