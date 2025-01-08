@@ -223,26 +223,43 @@ export default {
     },
     async saveEdit() {
       const token = localStorage.getItem('authToken');
-      if (this.editIndex !== null) {
-        if (this.editForm.image) {
-          const formData = new FormData();
-          formData.append("image", this.editForm.image);
+      let imageUrl = this.editForm.image;
+
+      if (this.editForm.image && typeof this.editForm.image !== 'string') {
+        const formData = new FormData();
+        formData.append("image", this.editForm.image);
+
+        try {
           const imageResponse = await axios.post(`${process.env.VUE_APP_BACKENDURL}/subirimagen`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`
             },
           });
-          this.editForm.image = `${process.env.VUE_APP_IMAGEROUTE}/${imageResponse.data.filename}`;
+          imageUrl = imageResponse.data.filename;
+        } catch (error) {
+          console.error("Error al subir la imagen:", error);
+          return;
         }
-        this.newsData.splice(this.editIndex, 1, { ...this.editForm });
       }
-      await axios.put(`${process.env.VUE_APP_BACKENDURL}/news/${this.editForm._id}`, this.editForm, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      this.closeEditModal();
+
+      const updatedNews = {
+        ...this.editForm,
+        image: imageUrl,
+        tags: this.editForm.tags.map(tag => tag.name)
+      };
+
+      try {
+        await axios.put(`${process.env.VUE_APP_BACKENDURL}/news/${this.editForm._id}`, updatedNews, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        this.newsData.splice(this.editIndex, 1, updatedNews);
+        this.closeEditModal();
+      } catch (error) {
+        console.error("Error al guardar la noticia:", error);
+      }
     },
     async getNews() {
       try {
