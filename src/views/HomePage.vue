@@ -62,6 +62,11 @@
   <section class="truly-kurious-section">
     <img :src="TrulyKuriousImage" class="truly-kurious-image" alt="Truly Kurious" />
   </section>
+
+  <section class="info-section">
+    <InfoDolarCombustible />
+  </section>
+
   <CategoryHome
       :message="'Internacionales'"
       :backgroundColor="'green'"
@@ -78,6 +83,9 @@
       :message="'Deportes'"
       :backgroundColor="'white'"
     />
+  ,<section class="opinions-section">
+    <Opinions />
+  </section>
   <CategoryHome
       :message="'Actualidad'"
       :backgroundColor="'green'"
@@ -98,6 +106,8 @@
       :message="'Local'"
       :backgroundColor="'green'"
     />
+
+
   <Footer />
 </template>
 
@@ -108,12 +118,14 @@ import TrulyImage from "@/assets/publicidad/publicidad_1.jpg";
 import Footer from "@/components/Home/footerHome.vue";
 import TrulyKuriousImage from "@/assets/truly_kurious.jpg"; 
 import CategoryHome from "@/components/Home/CategoryHome.vue";
+import InfoDolarCombustible from "@/components/Home/infoDolarCombustible.vue";
+import Opinions from "@/components/Home/opinions.vue";
 import axios from "axios";
 
 
 
 export default {
-  components: { HeaderHome, NewsWithTitle, Footer, CategoryHome },
+  components: { HeaderHome, NewsWithTitle, Footer, CategoryHome, InfoDolarCombustible, Opinions },
   data() {
     return {
       PortadaId: "",
@@ -350,6 +362,24 @@ footer {
 
 .mute-button:hover {
   background-color: rgba(0, 0, 0, 0.8);
+}
+
+.info-section {
+  max-width: 1500px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.opinions-section {
+  max-width: 1500px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {

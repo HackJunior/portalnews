@@ -7,8 +7,8 @@
             <button @click="prevOpinion" class="nav-button">‹</button>
             <transition-group name="slide-fade" tag="div" class="opinions-wrapper">
                 <div class="opinion" v-for="(opinion, index) in visibleOpinions" :key="index">
-                    <img :src="opinion.photo" alt="Person's photo" class="photo-circle" />
-                    <p class="opinion-text">{{ opinion.text }}</p>
+                    <img :src="opinion.imagePerfil" alt="Person's photo" class="photo-circle" />
+                    <p class="opinion-text">{{ opinion.title }}</p>
                 </div>
             </transition-group>
             <button @click="nextOpinion" class="nav-button">›</button>
@@ -17,26 +17,12 @@
 </template>
 
 <script>
-import opinion1 from '@/assets/opinions/opinion_1.jpg';
-import opinion2 from '@/assets/opinions/opinion_2.jpeg';
-import opinion3 from '@/assets/opinions/opinion_3.jpeg';
-import opinion4 from '@/assets/opinions/opinion_4.jpg';
-import opinion5 from '@/assets/opinions/opinion_5.jpeg';
-import opinion6 from '@/assets/opinions/opinion_6.jpg';
-import opinion7 from '@/assets/opinions/opinion_7.png';
+import axios from 'axios';
 
 export default {
     data() {
         return {
-            opinions: [
-                { photo: opinion1, text: 'Entre pantallas y progreso: proteger a la niñez en la era digital' },
-                { photo: opinion2, text: 'Entre pantallas y progreso: proteger a la niñez en la era digital' },
-                { photo: opinion3, text: 'Entre pantallas y progreso: proteger a la niñez en la era digital' },
-                { photo: opinion4, text: 'Entre pantallas y progreso: proteger a la niñez en la era digital' },
-                { photo: opinion5, text: 'Entre pantallas y progreso: proteger a la niñez en la era digital' },
-                { photo: opinion6, text: 'Entre pantallas y progreso: proteger a la niñez en la era digital' },
-                { photo: opinion7, text: 'Entre pantallas y progreso: proteger a la niñez en la era digital' },
-            ],
+            opinions: [],
             currentIndex: 0,
             visibleCount: 4, // Number of opinions to show at once
         };
@@ -47,6 +33,21 @@ export default {
         },
     },
     methods: {
+        async fetchOpinions() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news`, {
+                    params: {
+                        category: "Opinión"
+                    },
+                });
+                this.opinions = response.data.map(item => ({
+                    imagePerfil: `${process.env.VUE_APP_IMAGEROUTE}${item.imagePerfil}`,
+                    title: item.title
+                }));
+            } catch (error) {
+                console.error("Error fetching opinions:", error);
+            }
+        },
         prevOpinion() {
             if (this.currentIndex > 0) {
                 this.currentIndex--;
@@ -57,6 +58,9 @@ export default {
                 this.currentIndex++;
             }
         },
+    },
+    mounted() {
+        this.fetchOpinions();
     },
 };
 </script>

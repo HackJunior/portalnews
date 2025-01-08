@@ -101,8 +101,29 @@
           />
         </div>
 
+        <div class="form-group">
+          <label for="editImage">Imagen</label>
+          <input type="file" id="editImage" @change="onEditImageChange" accept="image/*" class="styled-input" />
+        </div>
+
+        <button @click="openContentModal" class="edit-content-btn">Editar Contenido</button>
+
         <button @click="saveEdit" class="save-btn">Guardar</button>
         <button @click="closeEditModal" class="cancel-btn">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- Modal de edición de contenido -->
+    <div v-if="showContentModal" class="modal-overlay">
+      <div class="modal-content-large">
+        <h3>Editar Contenido</h3>
+        <textarea
+          v-model="editForm.content"
+          rows="20"
+          class="styled-textarea"
+        ></textarea>
+        <button @click="closeContentModal" class="save-btn">Guardar</button>
+        <button @click="closeContentModal" class="cancel-btn">Cancelar</button>
       </div>
     </div>
   </div>
@@ -142,10 +163,13 @@ export default {
       showEditModal: false,
       showDeleteModal: false,
       deleteId: null,
+      showContentModal: false,
       editForm: {
         title: "",
         category: "",
         tags: [],
+        image: null,
+        content: ""
       },
       editIndex: null,
       categories,
@@ -173,25 +197,51 @@ export default {
       this.deleteId = null; 
     },
     openEditModal(news) {
-      this.editForm = { ...news};
-      this.editIndex = this.newsData.findIndex(item => item.id === news._id);
+      this.editForm = { 
+        ...news,
+        tags: news.tags ? news.tags.map(tag => this.tagsOptions.find(option => option.name === tag) || { name: tag }) : [],
+        image: news.image,
+        content: news.content
+      };
+      this.editIndex = this.newsData.findIndex(item => item._id === news._id);
       this.showEditModal = true;
     },
     closeEditModal() {
       this.showEditModal = false;
-      this.editForm = { title: "", category: "", tags: [] };
+      this.editForm = { title: "", category: "", tags: [], image: null, content: "" };
       this.editIndex = null;
+    },
+    onEditImageChange(event) {
+      const file = event.target.files[0];
+      this.editForm.image = file;
+    },
+    openContentModal() {
+      this.showContentModal = true;
+    },
+    closeContentModal() {
+      this.showContentModal = false;
     },
     async saveEdit() {
       const token = localStorage.getItem('authToken');
       if (this.editIndex !== null) {
+        if (this.editForm.image) {
+          const formData = new FormData();
+          formData.append("image", this.editForm.image);
+          const imageResponse = await axios.post(`${process.env.VUE_APP_BACKENDURL}/subirimagen`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`
+            },
+          });
+          this.editForm.image = `${process.env.VUE_APP_IMAGEROUTE}/${imageResponse.data.filename}`;
+        }
         this.newsData.splice(this.editIndex, 1, { ...this.editForm });
       }
-      await axios.put(`${process.env.VUE_APP_BACKENDURL}/news/${this.editForm._id}`,this.editForm,{
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+      await axios.put(`${process.env.VUE_APP_BACKENDURL}/news/${this.editForm._id}`, this.editForm, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       this.closeEditModal();
     },
     async getNews() {
@@ -382,6 +432,18 @@ export default {
   text-align: center;
 }
 
+.modal-content-large {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  height: 80%;
+  text-align: center;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
 .form-group {
   margin-bottom: 15px;
   text-align: left;
@@ -405,6 +467,17 @@ export default {
 .styled-multiselect .multiselect__tags {
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.styled-textarea {
+  flex-grow: 1;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  box-sizing: border-box;
+  margin-bottom: 10px;
 }
 
 .save-btn,
@@ -435,6 +508,17 @@ export default {
   border-radius: 4px;
   cursor: pointer;
   margin: 5px;
+}
+
+.edit-content-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin: 5px;
+  background-color: #007bff;
+  color: #fff;
 }
 
 </style>

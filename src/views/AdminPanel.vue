@@ -7,7 +7,7 @@
         @click="currentSection = 'add-news'"
       >Agregar Noticias</span>
       <span
-        :class="['carousel-item', currentSection === 'view-news' ? 'active' : '']"
+        :class="['carousel-item', cuwrrentSection === 'view-news' ? 'active' : '']"
         @click="currentSection = 'view-news'"
       >Ver Noticias en Línea</span>
       <span
