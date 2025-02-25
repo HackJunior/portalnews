@@ -10,14 +10,14 @@
           class="opinion"
           v-for="(opinion, index) in visibleOpinions"
           :key="index"
+          @click="onTitleClick(opinion.urlIdTitle)"
         >
           <img
             :src="opinion.imagePerfil"
             alt="Person's photo"
             class="photo-circle"
-            @click="onTitleClick(opinion.urlIdTitle)"
           />
-          <p class="opinion-text" @click="onTitleClick(opinion.urlIdTitle)">
+          <p class="opinion-text">
             {{ opinion.title }}
           </p>
         </div>
@@ -33,7 +33,9 @@ import axios from "axios";
 export default {
   data() {
     return {
-      opinions: [],
+      opinions: [
+
+      ],
       currentIndex: 0,
       visibleCount: 4,
     };
@@ -152,6 +154,7 @@ export default {
 .opinion {
   text-align: center;
   margin: 0 20px; /* Add space between opinions */
+  cursor: pointer; /* Add this line to change cursor */
 }
 
 .photo-circle {
