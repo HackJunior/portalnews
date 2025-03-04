@@ -2,25 +2,25 @@
   <HeaderHome />
   <section class="portada-container">
     <div class="portada-main">
-      <NewsWithTitle 
-        :imageUrl="mainImage" 
-        :category="category" 
-        :title="headline" 
-        :link="'https://example.com'" 
+      <NewsWithTitle
+        :imageUrl="mainImage"
+        :category="category"
+        :title="headline"
+        :link="'https://example.com'"
         height="560px"
         fontSize="3rem"
         :id="urlIdTitle"
       />
-    </div>  
+    </div>
 
     <div class="portada-side">
       <div class="video-section">
-        <div class="video-carousel">
-          <button class="carousel-arrow left" @click="prevVideo">&#8249;</button>
+        <!-- New video section with controls -->
+        <div class="single-video-container">
           <video
             ref="currentVideo"
-            :src="videos[currentVideo]"
-            class="carousel-video"
+            src="@/assets/videos/SEGURIDAD_CIUDADANA_1080.mp4"
+            class="single-video"
             @mouseover="hovering = true"
             @mouseleave="hovering = false"
             @click="openExternalUrl"
@@ -28,21 +28,22 @@
             loop
             muted
           ></video>
-          <button class="carousel-arrow right" @click="nextVideo">&#8250;</button>
-          <button class="mute-button" @click="toggleMute">{{ isMuted ? 'Unmute' : 'Mute' }}</button>
+          <button class="mute-button" @click="toggleMute">
+            {{ isMuted ? "Unmute" : "Mute" }}
+          </button>
         </div>
-    </div>
-    <div class="truly-section">
-      <iframe 
-          width="100%" 
-          height="280" 
-          :src="videoUrl" 
-          title="YouTube video player" 
-          frameborder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      </div>
+      <div class="truly-section">
+        <iframe
+          width="100%"
+          height="280"
+          :src="videoUrl"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
         ></iframe>
-    </div> 
+      </div>
     </div>
   </section>
 
@@ -60,53 +61,26 @@
   </section>
 
   <section class="truly-kurious-section">
-    <img :src="TrulyKuriousImage" class="truly-kurious-image" alt="Truly Kurious" />
+    <img :src="logoMIP" class="truly-kurious-image" alt="Logo MIP" />
   </section>
 
   <section class="info-section">
     <InfoDolarCombustible />
   </section>
 
-  <CategoryHome
-      :message="'Internacionales'"
-      :backgroundColor="'green'"
-    />
-  <CategoryHome
-      :message="'Política'"
-      :backgroundColor="'white'"
-    />
-  <CategoryHome
-      :message="'Economía'"
-      :backgroundColor="'red'"
-    />
-  <CategoryHome
-      :message="'Deportes'"
-      :backgroundColor="'white'"
-    />
-  ,<section class="opinions-section">
+  <CategoryHome :message="'Internacionales'" :backgroundColor="'green'" />
+  <CategoryHome :message="'Política'" :backgroundColor="'white'" />
+  <CategoryHome :message="'Economía'" :backgroundColor="'red'" />
+  <CategoryHome :message="'Deportes'" :backgroundColor="'white'" />
+  ,
+  <section class="opinions-section">
     <Opinions />
   </section>
-  <CategoryHome
-      :message="'Actualidad'"
-      :backgroundColor="'green'"
-    />
-  <CategoryHome
-      :message="'Nacionales'"
-      :backgroundColor="'white'"
-    />
-  <CategoryHome
-      :message="'Entretenimiento'"
-      :backgroundColor="'red'"
-    />
-  <CategoryHome
-      :message="'Viral'"
-      :backgroundColor="'white'"
-    />
-  <CategoryHome
-      :message="'Local'"
-      :backgroundColor="'green'"
-    />
-
+  <CategoryHome :message="'Actualidad'" :backgroundColor="'green'" />
+  <CategoryHome :message="'Nacionales'" :backgroundColor="'white'" />
+  <CategoryHome :message="'Entretenimiento'" :backgroundColor="'red'" />
+  <CategoryHome :message="'Viral'" :backgroundColor="'white'" />
+  <CategoryHome :message="'Local'" :backgroundColor="'green'" />
 
   <Footer />
 </template>
@@ -116,16 +90,21 @@ import HeaderHome from "@/components/Home/HeaderHome.vue";
 import NewsWithTitle from "@/components/Home/NewsWithTitle.vue";
 import TrulyImage from "@/assets/publicidad/publicidad_1.jpg";
 import Footer from "@/components/Home/footerHome.vue";
-import TrulyKuriousImage from "@/assets/truly_kurious.jpg"; 
+import logoMIP from "@/assets/logoMIPWhite.png"; // Import the new image
 import CategoryHome from "@/components/Home/CategoryHome.vue";
 import InfoDolarCombustible from "@/components/Home/infoDolarCombustible.vue";
 import Opinions from "@/components/Home/opinions.vue";
 import axios from "axios";
 
-
-
 export default {
-  components: { HeaderHome, NewsWithTitle, Footer, CategoryHome, InfoDolarCombustible, Opinions },
+  components: {
+    HeaderHome,
+    NewsWithTitle,
+    Footer,
+    CategoryHome,
+    InfoDolarCombustible,
+    Opinions,
+  },
   data() {
     return {
       PortadaId: "",
@@ -133,14 +112,14 @@ export default {
       category: "",
       headline: "",
       TrulyImage,
-      TrulyKuriousImage,
-      urlIdTitle:"",
+      logoMIP, // Use the new image
+      urlIdTitle: "",
       videoUrl: "https://www.youtube.com/embed/kNt-81PAE94",
       gridNews: [],
       videos: [
         require("@/assets/videos/video1.mp4"),
         require("@/assets/videos/video2.mp4"),
-        require("@/assets/videos/video3.mp4")
+        require("@/assets/videos/video3.mp4"),
       ],
       currentVideo: 0,
       hovering: false,
@@ -149,11 +128,14 @@ export default {
   },
   methods: {
     async getPortada() {
-      const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news`, {
-        params: {
-          tags: "Portada",
-        },
-      });
+      const response = await axios.get(
+        `${process.env.VUE_APP_BACKENDURL}/news`,
+        {
+          params: {
+            tags: "Portada",
+          },
+        }
+      );
 
       this.PortadaId = response.data[0]._id;
       this.mainImage = process.env.VUE_APP_IMAGEROUTE + response.data[0].image;
@@ -162,11 +144,14 @@ export default {
       this.urlIdTitle = response.data[0].urlIdTitle;
     },
     async getPortadaBottom() {
-      const response = await axios.get(`${process.env.VUE_APP_BACKENDURL}/news`, {
-        params: {
-          tags: "Portada Bottom",
-        },
-      });
+      const response = await axios.get(
+        `${process.env.VUE_APP_BACKENDURL}/news`,
+        {
+          params: {
+            tags: "Portada Bottom",
+          },
+        }
+      );
       this.gridNews = response.data.slice(0, 6).map((news) => ({
         ...news,
         image: `${process.env.VUE_APP_IMAGEROUTE}${news.image}`,
@@ -288,16 +273,20 @@ footer {
   margin: 20px auto;
   display: flex;
   justify-content: center;
+  background-color: #043b78; /* Updated blue background */
+  padding: 20px;
+  border-radius: 8px;
 }
 
 .truly-kurious-image {
   width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 1500px;
+  height: 230px;
+  object-fit: contain;
 }
 
-.video-carousel {
+/* New single video styles */
+.single-video-container {
   position: relative;
   display: flex;
   align-items: center;
@@ -308,44 +297,15 @@ footer {
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.carousel-video {
+.single-video {
   width: 100%;
   height: 280px;
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
 }
 
-.carousel-video:hover {
+.single-video:hover {
   transform: scale(1.1);
-}
-
-.carousel-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.carousel-arrow.left {
-  left: 10px;
-}
-
-.carousel-arrow.right {
-  right: 10px;
-}
-
-.carousel-arrow:hover {
-  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .mute-button {
