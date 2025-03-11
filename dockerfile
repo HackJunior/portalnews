@@ -17,7 +17,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copia los certificados locales al contenedor
-#COPY ./certs /etc/letsencrypt
+COPY ./certs /etc/letsencrypt
 
 # Copia la configuración personalizada de NGINX
 COPY nginx.conf /etc/nginx/conf.d/default.conf
