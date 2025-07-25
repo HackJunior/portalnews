@@ -5,6 +5,13 @@
       <div class="logo">
         <img src="@/assets/logoSTE.png" alt="Logo" @click="goToHome"/>
       </div>
+
+      <div class="banner-wrapper"> 
+        <a href="https://propeep.gob.do/" target="_blank" rel="noopener">
+          <img src="@/assets/banner.jpg" alt="Banner Propeep" class="banner-image" />
+        </a>
+      </div>
+
       <div class="social-icons">
         <a href="https://www.instagram.com/sdetoday?igsh=MXd4eWZobzR4OWwyZw%3D%3D" target="_blank" rel="noopener">
           <img src="@/assets/icons/instagram.svg" alt="Instagram" />
@@ -111,6 +118,9 @@ body {
 .header-space {
   height: 10px;
   background-color: #e0e0e0;
+  max-width: 1500px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .header-home {
@@ -123,23 +133,33 @@ body {
 
 .header-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+  justify-content: space-between;
+  max-width: 1500px;
   margin: 0 auto;
   width: 100%;
-  padding: 0 20px;
+  padding: 0 10px;
+  gap: 10px;
 }
+
+/* Flex behavior */
+.logo {
+  flex: 0 0 auto;
+}
+
 
 .logo img {
   height: 70px;
+  cursor: pointer;
 }
 
 .social-icons {
+  flex: 0 0 auto;
   display: flex;
   gap: 10px;
   align-items: center;
 }
+
 
 .dropdown {
   position: relative;
@@ -265,5 +285,25 @@ body {
   .dropdown-menu li {
     padding: 20px; /* Add padding for mobile view */
   }
+
+  .banner-image {
+    height: 100px;
+  }
+}
+
+.banner-wrapper {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.banner-image {
+  width: 100%;
+  max-width: none;
+  height: 100px; 
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
 }
 </style>
