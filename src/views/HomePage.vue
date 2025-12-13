@@ -60,9 +60,15 @@
     />
   </section>
 
-  <section class="truly-kurious-section">
+<section class="truly-kurious-section">
+  <a
+    href="https://www.youtube.com/watch?v=pnLBxSgw7qo"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
     <img :src="logoMIP" class="truly-kurious-image" alt="Logo MIP" />
-  </section>
+  </a>
+</section>
 
   <section class="info-section">
     <InfoDolarCombustible />
@@ -90,7 +96,7 @@ import HeaderHome from "@/components/Home/HeaderHome.vue";
 import NewsWithTitle from "@/components/Home/NewsWithTitle.vue";
 import TrulyImage from "@/assets/publicidad/publicidad_1.jpg";
 import Footer from "@/components/Home/footerHome.vue";
-import logoMIP from "@/assets/logoMIPWhite.png"; // Import the new image
+import logoMIP from "@/assets/navidad_infotep.jpeg // Import the new image
 import CategoryHome from "@/components/Home/CategoryHome.vue";
 import InfoDolarCombustible from "@/components/Home/infoDolarCombustible.vue";
 import Opinions from "@/components/Home/opinions.vue";
