@@ -96,7 +96,7 @@ import HeaderHome from "@/components/Home/HeaderHome.vue";
 import NewsWithTitle from "@/components/Home/NewsWithTitle.vue";
 import TrulyImage from "@/assets/publicidad/publicidad_1.jpg";
 import Footer from "@/components/Home/footerHome.vue";
-import logoMIP from "@/assets/navidad_infotep.jpeg // Import the new image
+import logoMIP from "@/assets/navidad_infotep.jpeg"; // Import the new image
 import CategoryHome from "@/components/Home/CategoryHome.vue";
 import InfoDolarCombustible from "@/components/Home/infoDolarCombustible.vue";
 import Opinions from "@/components/Home/opinions.vue";
