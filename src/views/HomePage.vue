@@ -47,7 +47,7 @@
             muted
           ></video>
           <button class="mute-button" @click="toggleMute2">
-            {{ isMuted ? "Unmute" : "Mute" }}
+            {{ isMuted2 ? "Unmute" : "Mute" }}
           </button>
       </div>
       </div>
