@@ -34,6 +34,7 @@
         </div>
       </div>
       <div class="video-section">
+        <div class="single-video-container">
           <video
             src="@/assets/videos/mspVideo.mp4"
             ref="currentVideo2"
@@ -48,6 +49,7 @@
           <button class="mute-button" @click="toggleMute2">
             {{ isMuted ? "Unmute" : "Mute" }}
           </button>
+      </div>
       </div>
     </div>
   </section>
@@ -193,7 +195,7 @@ export default {
     toggleMute2() {
       const videoElement2 = this.$refs.currentVideo2;
       this.isMuted2 = !this.isMuted2;
-      videoElement2.muted = this.isMuted;
+      videoElement2.muted = this.isMuted2;
     },
     playCurrentVideo() {
       const videoElement = this.$refs.currentVideo;
