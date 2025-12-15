@@ -33,16 +33,21 @@
           </button>
         </div>
       </div>
-      <div class="truly-section">
-        <iframe
-          width="100%"
-          height="280"
-          :src="videoUrl"
-          title="YouTube video player"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
+      <div class="video-section">
+          <video
+            src="@/assets/videos/mspVideo.mp4"
+            ref="currentVideo2"
+            class="single-video"
+            @mouseover="hovering2 = true"
+            @mouseleave="hovering2 = false"
+            @click="openExternalUrl2"
+            autoplay
+            loop
+            muted
+          ></video>
+          <button class="mute-button" @click="toggleMute2">
+            {{ isMuted ? "Unmute" : "Mute" }}
+          </button>
       </div>
     </div>
   </section>
@@ -130,6 +135,8 @@ export default {
       currentVideo: 0,
       hovering: false,
       isMuted: true,
+      hovering2: false,
+      isMuted2: true
     };
   },
   methods: {
@@ -175,10 +182,18 @@ export default {
     openExternalUrl() {
       window.open("https://mip.gob.do/", "_blank");
     },
+    openExternalUrl2() {
+      window.open("https://www.msp.gob.do/web/", "_blank");
+    },
     toggleMute() {
       const videoElement = this.$refs.currentVideo;
       this.isMuted = !this.isMuted;
       videoElement.muted = this.isMuted;
+    },
+    toggleMute2() {
+      const videoElement2 = this.$refs.currentVideo2;
+      this.isMuted2 = !this.isMuted2;
+      videoElement2.muted = this.isMuted;
     },
     playCurrentVideo() {
       const videoElement = this.$refs.currentVideo;
@@ -199,6 +214,13 @@ export default {
       videoElement.play().catch((error) => {
         console.warn("Autoplay prevented on load:", error);
       });
+
+      const videoElement2 = this.$refs.currentVideo2;
+      videoElement2.muted = this.isMuted2;
+      videoElement2.play().catch((error) => {
+        console.warn("Autoplay2 prevented on load:", error);
+      });
+      
     });
   },
 };
